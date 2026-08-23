@@ -1,4 +1,4 @@
-/* KriptoDanik AI — interaction recovery v1.12.3
+/* KriptoDanik AI — interaction recovery v1.12.4
  * Defensive bootstrap for cases where the main SPA starts visually but its
  * click bindings are missing or a stale full-screen layer captures input.
  */
@@ -27,14 +27,54 @@
   }
 
   function releaseLayers() {
-    document.querySelectorAll(
+    const layers = document.querySelectorAll(
       '.onboarding-overlay, .coach-tour-overlay, .mobile-nav-scrim, #kdAuthOverlay, #screenshotLightbox'
-    ).forEach(layer => {
+    );
+
+    layers.forEach(layer => {
       const style = getComputedStyle(layer);
-      const hidden = layer.hidden || layer.getAttribute('aria-hidden') === 'true' ||
-        style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
-      if (hidden) layer.style.pointerEvents = 'none';
+      const id = layer.id;
+      const isActive = layer.classList.contains('active');
+      const isHidden = layer.hidden || layer.getAttribute('aria-hidden') === 'true';
+
+      // The mobile scrim is only allowed to capture input while the sidebar is
+      // explicitly open. This prevents a stale scrim from covering the whole UI.
+      if (layer.classList.contains('mobile-nav-scrim')) {
+        const sidebarOpen = document.querySelector('.sidebar.mobile-open');
+        if (!sidebarOpen) {
+          layer.classList.remove('active');
+          layer.style.pointerEvents = 'none';
+        }
+        return;
+      }
+
+      // Auth overlay is controlled by the hidden attribute. Never let a stale
+      // class alone turn it into an invisible click-blocking layer.
+      if (id === 'kdAuthOverlay' && isHidden) {
+        layer.style.pointerEvents = 'none';
+        return;
+      }
+
+      // Onboarding / coach / lightbox may legitimately be active. When they are
+      // not active or are visually hidden, they must never capture pointer input.
+      const visuallyHidden = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
+      if (!isActive || isHidden || visuallyHidden) {
+        layer.style.pointerEvents = 'none';
+      } else {
+        layer.style.pointerEvents = '';
+      }
     });
+
+    // Last-resort check: if an overlay is physically sitting under the center
+    // point while it is not supposed to be open, remove it from hit testing.
+    try {
+      const hit = document.elementFromPoint(Math.floor(window.innerWidth / 2), Math.floor(window.innerHeight / 2));
+      const blocking = hit?.closest?.('.onboarding-overlay, .coach-tour-overlay, .mobile-nav-scrim, #kdAuthOverlay, #screenshotLightbox');
+      if (blocking && !blocking.classList.contains('active') && blocking.id !== 'kdAuthOverlay') {
+        blocking.style.pointerEvents = 'none';
+      }
+      if (blocking?.id === 'kdAuthOverlay' && blocking.hidden) blocking.style.pointerEvents = 'none';
+    } catch (_) {}
   }
 
   function bindNavigation() {
@@ -58,13 +98,11 @@
     releaseLayers();
     const app = getApp();
 
-    // If app.js did not execute, recover it from the same directory.
     if (!app && !appLoadRequested) {
       appLoadRequested = true;
       load(APP_SRC, 'kd-recovery-app');
     }
 
-    // Give the application a moment to create App, then load the interaction fixes.
     if (!runtimeLoadRequested && getApp()) {
       runtimeLoadRequested = true;
       load(RUNTIME_SRC, 'kd-recovery-runtime');
