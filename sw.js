@@ -1,4 +1,4 @@
-const CACHE = "kd-intelligence-v1.12.0";
+const CACHE = "kd-intelligence-v1.12.1";
 const CORE = [
   "./",
   "./index.html",
