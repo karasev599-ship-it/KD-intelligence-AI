@@ -2,6 +2,6 @@
   "use strict";
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js?v=1.12.0", { updateViaCache: "none" }).catch(() => {});
+    navigator.serviceWorker.register("sw.js?v=1.12.1", { updateViaCache: "none" }).catch(() => {});
   }, { once: true });
 })();
