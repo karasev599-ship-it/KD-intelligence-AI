@@ -1,4 +1,4 @@
-/* KriptoDanik AI — runtime fixes v1.1.1 */
+/* KriptoDanik AI — runtime fixes v1.12.1 */
 (function () {
   'use strict';
 
@@ -13,6 +13,46 @@
     if (messages) app.aiMessages = messages;
     if (input) app.aiInput = input;
     return { messages, input };
+  }
+
+  /*
+   * v1.12.1 — interaction watchdog.
+   *
+   * The application is a static SPA and several full-screen UI layers share
+   * the .onboarding-overlay class (wizard/lightbox). A stale/invisible layer
+   * must never remain hit-testable above the app: it makes every button look
+   * "dead" while the page itself continues rendering normally.
+   */
+  function releaseStaleInteractionLayers() {
+    const layers = document.querySelectorAll(
+      '.onboarding-overlay, .coach-tour-overlay, .mobile-nav-scrim, #kdAuthOverlay'
+    );
+
+    layers.forEach(layer => {
+      const active = layer.classList.contains('active');
+      const hiddenAttr = layer.hidden || layer.getAttribute('aria-hidden') === 'true';
+      const computed = window.getComputedStyle(layer);
+      const visiblyHidden = computed.display === 'none' || computed.visibility === 'hidden' || computed.opacity === '0';
+
+      if (!active && (hiddenAttr || visiblyHidden || layer.id === 'screenshotLightbox')) {
+        layer.style.pointerEvents = 'none';
+      }
+    });
+  }
+
+  function ensureNavigationWorks() {
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      if (item.dataset.kdRuntimeNavBound === '1') return;
+      item.dataset.kdRuntimeNavBound = '1';
+      item.addEventListener('click', function () {
+        const app = getApp();
+        if (!app || typeof app.showSection !== 'function') return;
+        document.querySelectorAll('.nav-item[data-section]').forEach(node => node.classList.remove('active'));
+        this.classList.add('active');
+        app.showSection(this.dataset.section);
+        if (typeof app.closeMobileNav === 'function') app.closeMobileNav();
+      });
+    });
   }
 
   function patchCoachDom() {
@@ -130,6 +170,8 @@
 
   function run() {
     const app = getApp();
+    releaseStaleInteractionLayers();
+    ensureNavigationWorks();
     if (!app) return;
     patchCoachDom();
     fixDashboardBalance();
@@ -138,6 +180,9 @@
       try { window.KDRefreshBrandDashboard(); } catch (_) {}
     }
     bindNavigationRefresh();
+    setTimeout(releaseStaleInteractionLayers, 0);
+    setTimeout(releaseStaleInteractionLayers, 150);
+    setTimeout(releaseStaleInteractionLayers, 700);
     setTimeout(fixCoachWorkspace, 0);
     setTimeout(fixCoachWorkspace, 150);
     setTimeout(fixCoachWorkspace, 700);
