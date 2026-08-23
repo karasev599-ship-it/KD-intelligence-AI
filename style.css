@@ -1,3 +1,5 @@
+/* v1.12.6 — restore the complete stylesheet accidentally replaced during interaction-recovery fixes. The previous complete stylesheet is pinned to an immutable commit so the UI is restored without depending on a moving branch. */
+@import url("https://cdn.jsdelivr.net/gh/karasev599-ship-it/KD-intelligence-AI@f17275d76faf6f48330b526009573e3f234b3573/style.css");
 
 /* v1.12.5 — interaction safety: recovery may temporarily set pointer-events:none
    on hidden full-screen layers. Visibility rules must always restore interaction
