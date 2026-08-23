@@ -1,11 +1,11 @@
-const CACHE = "kd-intelligence-v1.12.3";
+const CACHE = "kd-intelligence-v1.12.4";
 const CORE = [
   "./",
   "./index.html",
   "./style.css",
   "./chart.js?v=1.12.0",
   "./brand-fallback.js?v=1.12.0",
-  "./interaction-recovery.js?v=1.12.3",
+  "./interaction-recovery.js?v=1.12.4",
   "./app.js?v=1.12.0",
   "./runtime-fixes.js?v=1.12.3",
   "./scanner-pro.js?v=1.12.0",
