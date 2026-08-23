@@ -1,0 +1,16 @@
+{
+  "fetchedAt": "2026-08-21T23:58:31.201775+00:00",
+  "source": "Forex Factory weekly calendar feed",
+  "timezone": "source feed timezone",
+  "events": [
+    {
+      "title": "President Trump Speaks",
+      "country": "USD",
+      "date": "2026-08-21T19:00:00-04:00",
+      "impact": "Medium",
+      "actual": "",
+      "forecast": "",
+      "previous": ""
+    }
+  ]
+}

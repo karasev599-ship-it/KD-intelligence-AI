@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="application-version" content="1.12.0">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="KriptoDanik AI">
+    <meta property="og:description" content="KriptoDanik AI — твой AI-помощник по криптовалюте и трейдингу.">
+    <meta property="og:image" content="/assets/og-image.png?v=2">
+    <meta property="og:image:alt" content="KriptoDanik AI">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="KriptoDanik AI">
+    <meta name="twitter:description" content="AI-помощник по криптовалюте и трейдингу.">
+    <meta name="twitter:image" content="/assets/og-image.png?v=2">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KriptoDanik AI</title>
+    <meta name="theme-color" content="#0A0A0F">
+    <meta name="description" content="KriptoDanik AI — аналитика, журнал сделок, дисциплина и AI-коуч.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css?v=1.12.0" />
+
+    <!-- Pinned to an exact Chart.js release (was the unpinned "/npm/chart.js" alias,
+         which resolves to whatever build is "latest" at request time — that drift is
+         what caused the CDN to occasionally serve a JS file whose embedded
+         sourceMappingURL pointed at a chart.umd.min.js.map that didn't match, producing
+         a 404 in DevTools. Pinning fixes the mismatch without changing chart behavior. -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script defer src="brand-fallback.js?v=1.12.0"></script>
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- ============================================================
+        SIDEBAR
+        ============================================================ -->
+        <div class="mobile-nav-scrim" id="mobileNavScrim"></div>
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="logo">
+                    <div class="logo-icon">KD</div>
+                    <div>
+                        <h2 id="appName">KriptoDanik</h2>
+                        <span id="appSub">AI</span>
+                    </div>
+                </div>
+
+                <div class="nav-group-label">Главное</div>
+                <nav id="mainNav">
+                    <button class="nav-item" data-section="dashboard">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        <span data-key="nav_dashboard">Dashboard</span>
+                    </button>
+                    <button class="nav-item" data-section="journal">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h6"/><path d="M8 16h4"/></svg>
+                        <span data-key="nav_journal">Journal</span>
+                        <span class="badge" id="journalBadge">0</span>
+                    </button>
+                    <button class="nav-item" data-section="calendar">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span data-key="nav_calendar">Calendar</span>
+                        <span class="badge" id="calendarBadge">0</span>
+                    </button>
+                </nav>
+
+                <div class="nav-group-label">Инструменты</div>
+                <nav>
+                    <button class="nav-item" data-section="analytics">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/><circle cx="12" cy="16" r="5"/><path d="M12 11v5"/><path d="M9 13l3 3 3-3"/></svg>
+                        <span data-key="nav_analytics">Analytics</span>
+                    </button>
+                    <button class="nav-item" data-section="performance">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4 4l2.5 2.5"/><path d="M17.5 17.5L20 20"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4 20l2.5-2.5"/><path d="M17.5 6.5L20 4"/><circle cx="12" cy="12" r="4"/></svg>
+                        <span data-key="nav_performance">Performance</span>
+                    </button>
+                    <button class="nav-item" data-section="guardian">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                        <span data-key="nav_guardian">Guardian</span>
+                    </button>
+                    <button class="nav-item" data-section="academy">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+                        <span data-key="nav_academy">Academy</span>
+                    </button>
+                </nav>
+
+                <div class="nav-group-label">Инструменты</div>
+                <nav>
+                    <button class="nav-item" data-section="strategy">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <span data-key="nav_strategy">Библиотека стратегий</span>
+                    </button>
+                    <button class="nav-item" data-section="marketpulse">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+                        <span data-key="nav_marketpulse">Market Pulse</span>
+                    </button>
+                </nav>
+
+                <div class="nav-group-label">Прочее</div>
+                <nav>
+                    <button class="nav-item" data-section="scanner">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+                        <span data-key="nav_scanner">AI Scanner</span>
+                    </button>
+                    <button class="nav-item" data-section="intelligence">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span data-key="nav_intelligence">AI Coach</span>
+                    </button>
+                    <button class="nav-item" data-section="settings">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span data-key="nav_settings">Settings</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="sidebar-bottom">
+                <button class="kd-account-button" id="kdAccountButton" type="button">
+                    <span class="kd-account-avatar" id="kdAccountAvatar">G</span>
+                    <span class="kd-account-copy"><b id="kdAccountName">Гость</b><small id="kdAccountPlan">FREE</small></span>
+                    <span class="kd-account-arrow">›</span>
+                </button>
+                <div class="online-status">
+                    <span class="online-dot"></span>
+                    <span data-key="online">AI Connected</span>
+                </div>
+                <div class="lang-selector">
+                    <button class="active" data-lang="ru">RU</button>
+                    <button data-lang="en">EN</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============================================================
+        MAIN
+        ============================================================ -->
+        <main class="main">
+
+            <!-- Header -->
+            <header>
+                <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open navigation" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+                <div>
+                    <p class="greeting" id="pageGreeting" data-key="greeting">Good Evening</p>
+                    <h1 id="pageTitle">Welcome, <span id="userNameDisplay">Trader</span></h1>
+                </div>
+                <div class="header-actions">
+                    <div class="header-popover-wrapper" id="searchWrapper">
+                        <button class="icon-btn" id="searchBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </button>
+                        <div class="header-popover" id="searchPopover">
+                            <div class="header-popover-inner">
+                                <input type="text" id="globalSearchInput" class="form-input" placeholder="Поиск по сделкам и событиям..." autocomplete="off" />
+                                <div class="header-popover-results" id="globalSearchResults">
+                                    <div class="header-popover-empty">Начните вводить запрос...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-popover-wrapper" id="notifWrapper">
+                        <button class="icon-btn" id="notifBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+                        </button>
+                        <div class="header-popover" id="notifPopover">
+                            <div class="header-popover-inner">
+                                <div class="header-popover-title">Уведомления</div>
+                                <div class="header-popover-results" id="notifResults">
+                                    <div class="header-popover-empty">Нет новых уведомлений</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="avatar" id="headerAvatar">T</div>
+                </div>
+            </header>
+
+            <!-- ============================================================
+            ONBOARDING OVERLAY
+            ============================================================ -->
+            <div id="onboardingOverlay" class="onboarding-overlay">
+                <div class="onboarding-modal glass-panel wizard-modal">
+                    <div class="wizard-progress"><div class="wizard-progress-bar" id="wizardProgressBar"></div></div>
+                    <div class="wizard-step-label" id="wizardStepLabel">Шаг 1 из 4</div>
+                    <div class="onboarding-header">
+                        <h3 id="wizardStepTitle">Добро пожаловать в KriptoDanik AI</h3>
+                        <p id="wizardStepSubtitle">Давайте настроим ваш профиль трейдера</p>
+                    </div>
+                    <div class="onboarding-body wizard-body">
+                        <div class="wizard-step" data-step="1">
+                            <div class="form-group">
+                                <label>Ваше имя</label>
+                                <input type="text" id="onboardingName" placeholder="Введите имя" class="form-input" />
+                            </div>
+                        </div>
+                        <div class="wizard-step" data-step="2" style="display:none;">
+                            <div class="form-row-2">
+                                <div class="form-group"><label>Начальный баланс ($)</label><input type="number" id="onboardingCapital" placeholder="10000" class="form-input" /></div>
+                                <div class="form-group"><label>Риск на сделку (%)</label><input type="number" id="onboardingRisk" placeholder="1" step="0.5" class="form-input" /></div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group"><label>Дневная цель прибыли ($)</label><input type="number" id="onboardingDailyTarget" placeholder="800" class="form-input" /></div>
+                                <div class="form-group"><label>Максимальный дневной убыток ($)</label><input type="number" id="onboardingDailyLoss" placeholder="300" class="form-input" /></div>
+                            </div>
+                            <div class="form-group"><label>Предпочитаемый Risk/Reward</label>
+                                <select id="onboardingRR" class="form-input">
+                                    <option value="1:1">1:1</option>
+                                    <option value="1:2" selected>1:2</option>
+                                    <option value="1:3">1:3</option>
+                                    <option value="1:4">1:4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="wizard-step" data-step="3" style="display:none;">
+                            <div class="form-group"><label>Предпочитаемая торговая сессия</label>
+                                <select id="onboardingSession" class="form-input">
+                                    <option value="london">London</option>
+                                    <option value="ny" selected>New York</option>
+                                    <option value="asia">Asian</option>
+                                    <option value="sydney">Sydney</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Любимые рынки</label>
+                                <div class="checkbox-group" id="onboardingMarkets">
+                                    <label><input type="checkbox" value="crypto" /> Crypto</label>
+                                    <label><input type="checkbox" value="forex" /> Forex</label>
+                                    <label><input type="checkbox" value="stocks" /> Stocks</label>
+                                    <label><input type="checkbox" value="commodities" /> Commodities</label>
+                                </div>
+                            </div>
+                            <div class="form-group"><label>Любимые активы</label>
+                                <div class="checkbox-group" id="onboardingAssets">
+                                    <label><input type="checkbox" value="BTCUSDT" /> BTCUSDT</label>
+                                    <label><input type="checkbox" value="ETHUSDT" /> ETHUSDT</label>
+                                    <label><input type="checkbox" value="XAUUSD" /> XAUUSD</label>
+                                    <label><input type="checkbox" value="EURUSD" /> EURUSD</label>
+                                    <label><input type="checkbox" value="SOLUSDT" /> SOLUSDT</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wizard-step" data-step="4" style="display:none;">
+                            <p class="wizard-philosophy">KriptoDanik AI не является поставщиком сигналов и не предсказывает рынок. Наша задача — помочь вам соблюдать дисциплину, организовать рабочее пространство и следовать <strong>вашей собственной</strong> торговой стратегии.</p>
+                            <div class="form-group">
+                                <label>Опишите вашу торговую стратегию</label>
+                                <textarea id="onboardingStrategy" class="form-input" rows="5" placeholder="Например: Торгую на London-сессии. Отмечаю H4 максимум/минимум. Жду FVG на M5. Минимальный RR 1:2."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-error" id="wizardStepError"></div>
+                    </div>
+                    <div class="onboarding-footer wizard-footer" style="margin-top:20px;">
+                        <button class="btn-secondary" id="wizardBackBtn" style="visibility:hidden;">Назад</button>
+                        <button class="btn-primary" id="wizardNextBtn">Далее</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            AI COACH PRODUCT TOUR (first-user experience, v1.0.6)
+            ============================================================ -->
+            <div id="coachTourOverlay" class="coach-tour-overlay" aria-hidden="true">
+                <div class="coach-tour-backdrop"></div>
+                <section class="coach-tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+                    <div class="coach-tour-copy">
+                        <div class="coach-tour-brand"><img src="assets/avatar-circle-clean.png" alt="" onerror="this.onerror=null;this.src='assets/avatar-circle.png'"><span>KriptoDanik AI · AI Коуч</span></div>
+                        <div class="coach-tour-step" id="tourStepLabel">1 / 7</div>
+                        <h2 id="tourTitle">Добро пожаловать в KriptoDanik AI</h2>
+                        <div id="tourBody" class="coach-tour-body"></div>
+                        <div class="coach-tour-progress"><i id="tourProgressBar"></i></div>
+                        <div class="coach-tour-actions">
+                            <button class="coach-tour-skip" id="tourSkipBtn">Пропустить</button>
+                            <button class="coach-tour-back" id="tourBackBtn">Назад</button>
+                            <button class="coach-tour-next" id="tourNextBtn">Далее</button>
+                        </div>
+                    </div>
+                    <div class="coach-tour-character">
+                        <div class="coach-tour-glow"></div>
+                        <img src="assets/hero-character-clean.png" alt="KriptoDanik AI" onerror="this.onerror=null;this.src='assets/hero-character.png'">
+                        <div class="coach-tour-bubble">
+                            <span>AI COACH</span>
+                            <strong>Я проведу тебя по рабочему пространству и покажу, где находится всё важное.</strong>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============================================================
+            TRADE ENTRY MODAL
+            ============================================================ -->
+            <div id="tradeModalOverlay" class="onboarding-overlay">
+                <div class="onboarding-modal glass-panel trade-modal">
+                    <div class="onboarding-header">
+                        <h3 id="tradeModalTitle">Новая сделка</h3>
+                        <p>Заполните данные по сделке — Journal является единым источником данных для всего приложения</p>
+                    </div>
+                    <div class="onboarding-body trade-modal-body">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Актив *</label>
+                                <input type="text" id="tAsset" class="form-input" list="assetSuggestions" placeholder="BTCUSDT" />
+                                <datalist id="assetSuggestions">
+                                    <option value="BTCUSDT"></option>
+                                    <option value="ETHUSDT"></option>
+                                    <option value="XAUUSD"></option>
+                                    <option value="EURUSD"></option>
+                                    <option value="SOLUSDT"></option>
+                                </datalist>
+                                <span class="form-error" id="tAssetError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Направление *</label>
+                                <select id="tDirection" class="form-input">
+                                    <option value="">Выберите...</option>
+                                    <option value="long">Long (Buy)</option>
+                                    <option value="short">Short (Sell)</option>
+                                </select>
+                                <span class="form-error" id="tDirectionError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Цена входа *</label>
+                                <input type="number" id="tEntry" class="form-input" step="any" placeholder="0.00" />
+                                <span class="form-error" id="tEntryError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Цена выхода *</label>
+                                <input type="number" id="tExit" class="form-input" step="any" placeholder="0.00" />
+                                <span class="form-error" id="tExitError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Объём позиции</label>
+                                <input type="number" id="tSize" class="form-input" step="any" placeholder="Необязательно" />
+                            </div>
+                            <div class="form-group">
+                                <label>Риск (%) *</label>
+                                <input type="number" id="tRiskPercent" class="form-input" step="any" placeholder="1" />
+                                <span class="form-error" id="tRiskPercentError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Risk / Reward (RR) *</label>
+                                <input type="number" id="tRR" class="form-input" step="any" placeholder="2.0" />
+                                <span class="form-error" id="tRRError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Прибыль / Убыток ($) *</label>
+                                <input type="number" id="tPnl" class="form-input" step="any" placeholder="150" />
+                                <span class="form-error" id="tPnlError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Дата сделки *</label>
+                                <input type="date" id="tDate" class="form-input" />
+                                <span class="form-error" id="tDateError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Торговая сессия *</label>
+                                <select id="tSession" class="form-input">
+                                    <option value="">Выберите...</option>
+                                    <option value="asia">Asia</option>
+                                    <option value="london">London</option>
+                                    <option value="ny">New York</option>
+                                </select>
+                                <span class="form-error" id="tSessionError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Стратегия *</label>
+                                <input type="text" id="tStrategy" class="form-input" placeholder="Например: Breakout, Pullback..." />
+                                <span class="form-error" id="tStrategyError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Статус сделки *</label>
+                                <select id="tStatus" class="form-input">
+                                    <option value="">Выберите...</option>
+                                    <option value="win">Win</option>
+                                    <option value="loss">Loss</option>
+                                    <option value="breakeven">Break Even</option>
+                                </select>
+                                <span class="form-error" id="tStatusError"></span>
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Эмоция до сделки</label>
+                                <select id="tEmotionBefore" class="form-input">
+                                    <option value="calm">Спокоен</option>
+                                    <option value="confident">Уверен</option>
+                                    <option value="anxious">Тревожен</option>
+                                    <option value="greed">Жадность</option>
+                                    <option value="fear">Страх</option>
+                                    <option value="revenge">Реванш</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Эмоция после сделки</label>
+                                <select id="tEmotionAfter" class="form-input">
+                                    <option value="calm">Спокоен</option>
+                                    <option value="confident">Уверен</option>
+                                    <option value="anxious">Тревожен</option>
+                                    <option value="greed">Жадность</option>
+                                    <option value="fear">Страх</option>
+                                    <option value="revenge">Реванш</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Заметки</label>
+                            <textarea id="tNotes" class="form-input" rows="3" placeholder="Заметки по сделке (необязательно)"></textarea>
+                        </div>
+                        <div class="form-error" id="tFormError"></div>
+                    </div>
+                    <div class="onboarding-footer trade-modal-footer" style="margin-top:20px;">
+                        <button class="btn-secondary" id="tradeModalCancel">Отмена</button>
+                        <button class="btn-primary" id="tradeModalSave">Сохранить сделку</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            DASHBOARD (ЭТАП 2)
+            ============================================================ -->
+            <div id="section-dashboard" class="section-content brand-dashboard">
+                <div class="brand-hero-grid">
+                    <section class="brand-hero glass-panel">
+                        <div class="brand-hero-copy">
+                            <span class="brand-eyebrow">KRIPTODANIK AI • TRADING INTELLIGENCE</span>
+                            <h1>Добро пожаловать в<br><span>KriptoDanik AI</span></h1>
+                            <p>Твой AI-проводник в трейдинге.</p>
+                            <div class="brand-pills">
+                                <span>◈ Анализируй рынок</span><span>▣ Веди журнал</span>
+                                <span>♢ Контролируй риск</span><span>♜ Становись дисциплинированнее</span>
+                            </div>
+                            <button class="brand-cta" id="brandFirstTradeBtn">Добавить первую сделку <b>→</b></button>
+                        </div>
+                        <div class="brand-hero-art"><img src="assets/hero-character-clean.png" alt="KriptoDanik AI" onerror="this.onerror=null;this.src='assets/hero-character.png'"></div>
+                        <div class="brand-quote">“Trade smarter.<br>Think longer.”</div>
+                    </section>
+                    <aside class="brand-side-stack">
+                        <div class="brand-progress glass-panel">
+                            <div class="brand-panel-title"><span>♕ Твой прогресс</span><button>×</button></div>
+                            <strong id="brandProgress">0 / 10</strong><small id="brandProgressLabel">вызовов пройдено</small>
+                            <div class="progress-track"><i id="brandProgressBar" style="width:0%"></i></div>
+                            <div class="discipline-row"><div><b>♙</b><span>Уровень дисциплины<em id="brandDisciplineLabel">Нет данных</em></span></div><div class="grade" id="brandDisciplineGrade">—</div></div>
+                            <div class="discipline-good" id="brandDisciplineGood" hidden>A- <span>Очень хорошо</span></div>
+                        </div>
+                        <div class="brand-coach glass-panel">
+                            <div class="coach-head"><img src="assets/avatar-circle-clean.png" onerror="this.onerror=null;this.src='assets/avatar-circle.png'"><div><b>KriptoDanik AI</b><small>AI Коуч</small></div></div>
+                            <p><b>Привет, <span id="brandCoachName">Трейдер</span>! 🔥</b><br>Как проходит твоя торговая неделя? Хочешь проанализировать последние сделки или разобрать какой-то сетап?</p>
+                            <button class="coach-btn" id="brandCoachAnalyze">◉ Проанализируй мои сделки</button>
+                            <button class="coach-btn" id="brandCoachSetup">♢ Можем разобрать сетап?</button>
+                            <button class="coach-btn" id="brandCoachDiscipline">♙ Дай фидбек по дисциплине</button>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="brand-kpis">
+                    <div class="brand-kpi"><span>Баланс</span><b id="brandBalance">$ 0.00</b><em id="brandBalanceSub">Пока нет данных</em></div>
+                    <div class="brand-kpi"><span>Всего сделок</span><b id="brandTrades">0</b><em id="brandTradesSub">Нет данных</em></div>
+                    <div class="brand-kpi"><span>Win Rate</span><b id="brandWinrate">—</b><em id="brandWinrateSub">Недостаточно данных</em></div>
+                    <div class="brand-kpi"><span>Profit Factor</span><b id="brandProfitFactor">—</b><em id="brandProfitFactorSub">Недостаточно данных</em></div>
+                    <div class="brand-kpi streak"><span>Текущий стрик</span><b id="brandStreak">0 дней</b><em id="brandStreakSub">Начните журнал</em></div>
+                </div>
+
+                <div class="brand-motto glass-panel"><span>♕</span><b>«Дисциплина делает из трейдера легенду»</b><small>— KriptoDanik AI</small></div>
+
+                <!-- v1.1.3 — BRAND-FIRST DASHBOARD -->
+                <div class="brand-showcase-grid">
+                    <section class="brand-showcase-panel brand-performance glass-panel">
+                        <div class="brand-showcase-head"><h3>Эффективность</h3><div class="brand-periods"><button>7Д</button><button class="active">30Д</button><button>90Д</button><button>Все</button></div></div>
+                        <div class="brand-chart-wrap" id="brandChartWrap">
+                            <svg viewBox="0 0 760 280" preserveAspectRatio="none" class="brand-equity-svg" aria-label="График эффективности">
+                                <defs><linearGradient id="brandArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#8a2be2" stop-opacity=".42"/><stop offset="100%" stop-color="#8a2be2" stop-opacity="0"/></linearGradient></defs>
+                                <g class="chart-grid"><line x1="40" y1="45" x2="740" y2="45"/><line x1="40" y1="105" x2="740" y2="105"/><line x1="40" y1="165" x2="740" y2="165"/><line x1="40" y1="225" x2="740" y2="225"/></g>
+                                <path class="brand-area" d="M40,235 C80,220 95,180 130,198 S185,165 220,180 S265,140 300,157 S340,120 375,142 S425,95 460,118 S510,75 545,100 S600,62 635,78 S690,35 740,55 L740,250 L40,250 Z"/>
+                                <path class="brand-line" d="M40,235 C80,220 95,180 130,198 S185,165 220,180 S265,140 300,157 S340,120 375,142 S425,95 460,118 S510,75 545,100 S600,62 635,78 S690,35 740,55"/>
+                                <circle cx="460" cy="118" r="6" class="brand-dot"/><line x1="460" y1="118" x2="460" y2="250" class="brand-marker"/>
+                            </svg>
+                            <div class="brand-chart-tooltip"><b>+$1 240</b><span>12 февр.</span></div>
+                            <div class="brand-chart-labels"><span>0$</span><span>2k</span><span>4k</span><span>6k</span><span>8k</span></div>
+                            <div class="brand-chart-empty" id="brandChartEmpty">
+                                <strong>Пока нет данных</strong>
+                                <span>Добавьте первую сделку — и здесь появится реальная кривая доходности.</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="brand-showcase-panel brand-distribution glass-panel">
+                        <div class="brand-showcase-head"><h3>Распределение сделок</h3></div>
+                        <div class="brand-donut-layout">
+                            <div class="brand-donut" id="brandDonut"><div><b id="brandDonutTotal">0</b><span>сделок</span></div></div>
+                            <div class="brand-legend" id="brandLegend"><div class="brand-empty-distribution">Нет сделок — распределение появится после первой сделки.</div></div>
+                        </div>
+                    </section>
+
+                    <section class="brand-showcase-panel brand-recent glass-panel">
+                        <div class="brand-showcase-head"><h3>Последние сделки</h3><button class="brand-link-btn" id="brandOpenJournal">Открыть журнал →</button></div>
+                        <div class="brand-trade-table-head"><span>Символ</span><span>Тип</span><span>Вход</span><span>Выход</span><span>Результат</span><span>RR</span><span>Дата</span></div>
+                        <div id="brandRecentTrades" class="brand-trade-list"><div class="brand-empty-trades"><div>Пока нет реальных сделок</div><small>Добавленные тобой сделки появятся здесь автоматически.</small></div></div>
+                    </section>
+
+                    <section class="brand-showcase-panel brand-quick glass-panel">
+                        <div class="brand-showcase-head"><h3>Быстрые действия</h3></div>
+                        <div class="brand-quick-grid"><button id="brandQuickScanner"><b>◎</b><span>AI Scanner<small>Проверить сетап</small></span></button><button id="brandQuickJournal"><b>▣</b><span>Открыть журнал<small>Добавить сделку</small></span></button><button id="brandQuickAnalytics"><b>▥</b><span>Аналитика<small>Глубокий анализ</small></span></button><button id="brandQuickAcademy"><b>◇</b><span>Академия<small>Продолжить обучение</small></span></button></div>
+                    </section>
+
+                    <section class="brand-showcase-panel brand-guardian glass-panel">
+                        <div class="brand-showcase-head"><h3>🛡 Guardian</h3><span class="brand-status-ok" id="brandGuardianStatus">● Нет данных</span></div>
+                        <div class="brand-guardian-list" id="brandGuardianList"><span>● Добавьте первую сделку</span><span>● Guardian проверит реальные правила</span><span>● Здесь не будет выдуманных оценок</span></div>
+                        <div class="brand-guardian-footer"><b>♛</b><span>Маленькие шаги<br><small>делают большие результаты</small></span></div>
+                    </section>
+                </div>
+
+                <div class="legacy-dashboard-data">
+                <div class="dash-row-4">
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-header">
+                            <div class="dash-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                        </div>
+                        <div class="dash-card-body">
+                            <span class="dash-label" data-key="balance">Balance</span>
+                            <h2 class="dash-amount" id="balanceDisplay">$0.00</h2>
+                            <span class="dash-sub" data-key="balance_live">Live balance</span>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-header">
+                            <div class="dash-icon-wrap" style="background:rgba(251, 191, 36, 0.1);color:var(--brand-yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></div>
+                        </div>
+                        <div class="dash-card-body">
+                            <span class="dash-label">Цель на день</span>
+                            <h2 class="dash-amount" id="dailyTargetDisplay">800.00 $</h2>
+                            <span class="dash-sub positive" id="dailyTargetSub">+0.00 $ (0%)</span>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-header">
+                            <div class="dash-icon-wrap" style="background:rgba(67, 198, 160, 0.1);color:var(--brand-green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                        </div>
+                        <div class="dash-card-body">
+                            <span class="dash-label">Дневной лимит убытка</span>
+                            <h2 class="dash-amount" id="dailyLossDisplay">300.00 $</h2>
+                            <span class="dash-sub negative" id="dailyLossSub">-0.00 $ (0%)</span>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-header">
+                            <div class="dash-icon-wrap" style="background:rgba(239, 68, 68, 0.1);color:var(--brand-red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        </div>
+                        <div class="dash-card-body">
+                            <span class="dash-label">Риск на сделку</span>
+                            <h2 class="dash-amount" id="riskPerTradeDisplay">1.00 %</h2>
+                            <span class="dash-sub" id="riskPerTradeSub">10.00 $</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                v1.0.7 — SMART DASHBOARD: brand-new-account welcome hero
+                Shown only when there are zero trades; hidden otherwise.
+                ============================================================ -->
+                <div class="dash-panel glass-panel" id="dashWelcomeHero" style="display:none; text-align:center; padding:32px 20px; margin-bottom:20px;">
+                    <h2 data-key="dash_welcome_title" style="margin-bottom:6px;">Welcome to KriptoDanik AI</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:4px;" data-key="dash_welcome_no_data">No trading data yet</p>
+                    <p style="color:var(--text-secondary); margin-bottom:16px;" data-key="dash_welcome_cta">Start by recording your first trade.</p>
+                    <button class="btn-primary" id="dashWelcomeAddTradeBtn" data-key="add_first_trade">Add your first trade</button>
+                </div>
+
+                <!-- v1.0.7 — TODAY OVERVIEW -->
+                <div class="dash-panel-head">
+                    <h3 data-key="today_overview">Today</h3>
+                </div>
+                <div class="dash-row-4" id="dashTodayOverview">
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-body">
+                            <span class="dash-label" data-key="today_pnl">Today's P&L</span>
+                            <h2 class="dash-amount" id="todayPnlDisplay" style="font-size:22px;">—</h2>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-body">
+                            <span class="dash-label" data-key="today_trades">Today's trades</span>
+                            <h2 class="dash-amount" id="todayTradesDisplay" style="font-size:22px;">0</h2>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-body">
+                            <span class="dash-label" data-key="today_winrate">Today's win rate</span>
+                            <h2 class="dash-amount" id="todayWinRateDisplay" style="font-size:22px;">—</h2>
+                        </div>
+                    </div>
+                    <div class="dash-card glass-panel">
+                        <div class="dash-card-body">
+                            <span class="dash-label" data-key="discipline_score">Discipline</span>
+                            <h2 class="dash-amount" id="todayDisciplineDisplay" style="font-size:22px;">—</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- v1.0.7 — GUARDIAN STATUS / RECENT TRADES / QUICK ACTIONS -->
+                <div class="dash-row-middle" id="dashSmartRow">
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3 data-key="guardian_status">Guardian Status</h3></div>
+                        <div id="dashGuardianCard"></div>
+                    </div>
+
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3 data-key="recent_trades">Recent Trades</h3></div>
+                        <div id="dashRecentTrades"></div>
+                    </div>
+
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3 data-key="quick_actions">Quick Actions</h3></div>
+                        <div class="quick-actions-list">
+                            <button class="data-action-btn" id="qaAddTrade" data-key="qa_add_trade">Add Trade</button>
+                            <button class="data-action-btn" id="qaOpenJournal" data-key="qa_open_journal">Open Journal</button>
+                            <button class="data-action-btn" id="qaOpenGuardian" data-key="qa_open_guardian">Open Guardian</button>
+                            <button class="data-action-btn" id="qaOpenAnalytics" data-key="qa_open_analytics">Open Analytics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-row-middle">
+                    <div class="dash-panel glass-panel chart-main">
+                        <div class="dash-panel-head">
+                            <h3 data-key="equity_curve">Кривая доходности</h3>
+                            <div class="dash-period-toggle">
+                                <button class="active">1Д</button><button>7Д</button><button>30Д</button><button>90Д</button><button>Все</button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="equityChartWrapper"><canvas id="equityChart"></canvas></div>
+                    </div>
+
+                    <div class="dash-panel glass-panel stats-box">
+                        <div class="dash-panel-head" style="border-bottom:none; margin-bottom:0;">
+                            <h3>Статистика за 30 дней</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding-bottom:20px;">
+                            <div class="donut-wrapper">
+                                <canvas id="winRateDonutChart"></canvas>
+                                <div class="donut-center">
+                                    <span class="donut-percent" id="winRateDisplay">0%</span>
+                                </div>
+                            </div>
+                            <div class="stats-grid-2x2">
+                                <div><span class="stat-label">Всего сделок</span><span class="stat-val" id="totalTradesDisplay">0</span></div>
+                                <div><span class="stat-label">Прибыльные</span><span class="stat-val green" id="winTradesDisplay">0 (0%)</span></div>
+                                <div><span class="stat-label">Убыточные</span><span class="stat-val red" id="lossTradesDisplay">0 (0%)</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-panel glass-panel ai-box">
+                        <div class="dash-panel-head" style="border-bottom:none; margin-bottom:0;">
+                            <h3 data-key="nav_intelligence">AI Coach</h3>
+                            <div class="ai-avatar-small">AI</div>
+                        </div>
+                        <div class="ai-content">
+                            <div class="ai-context-snapshot" id="aiContextSnapshot"><span class="coach-context-empty">Нет данных для персонального контекста.</span></div>
+                            <p class="ai-msg" id="dashAIMsg">—</p>
+                            <p class="ai-msg sub" id="dashAIMsgSub">—</p>
+                            <button class="btn-primary full-width" id="dashAskBtn">Спросить AI Коуча</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-row-bottom">
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3>Trading Profile</h3></div>
+                        <div class="trading-profile-summary">
+                            <div class="tp-summary-item"><span class="tp-summary-label">Предпочитаемый RR</span><span class="tp-summary-value" id="tpPreferredRR">—</span></div>
+                            <div class="tp-summary-item"><span class="tp-summary-label">Торговая сессия</span><span class="tp-summary-value" id="tpSession">—</span></div>
+                            <div class="tp-summary-item">
+                                <span class="tp-summary-label">Прогресс сегодня</span>
+                                <span class="tp-summary-value" id="tpTodayProgress">$0.00</span>
+                                <div class="tp-progress-track"><div class="tp-progress-fill" id="tpProgressFill" style="width:0%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3>Распределение по R</h3></div>
+                        <div class="bar-chart" id="rDistributionBody"></div>
+                    </div>
+
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3>Лучшее время для торговли</h3></div>
+                        <div class="bar-chart" id="bestTimeBody"></div>
+                    </div>
+
+                    <div class="dash-panel glass-panel">
+                        <div class="dash-panel-head"><h3>Распределение сделок</h3></div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; height:calc(100% - 40px); gap:10px;">
+                            <div class="donut-small-wrapper">
+                                <canvas id="assetDonutChart"></canvas>
+                            </div>
+                            <div class="asset-list" id="assetListBody"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            JOURNAL (ЭТАП 3)
+            ============================================================ -->
+            <div id="section-journal" class="section-content">
+                <div class="journal-stats-modern">
+                    <div class="journal-stat-card glass-panel">
+                        <span class="stat-label" data-key="total_trades">Total Trades</span>
+                        <span class="stat-number" id="jTotalTrades">0</span>
+                    </div>
+                    <div class="journal-stat-card glass-panel">
+                        <span class="stat-label" data-key="win_rate">Win Rate</span>
+                        <span class="stat-number green" id="jWinRate">0%</span>
+                    </div>
+                    <div class="journal-stat-card glass-panel">
+                        <span class="stat-label" data-key="avg_rr">Avg RR</span>
+                        <span class="stat-number" id="jAvgRR">0.0</span>
+                    </div>
+                    <div class="journal-stat-card glass-panel">
+                        <span class="stat-label" data-key="total_pnl">Total P&L</span>
+                        <span class="stat-number green" id="jTotalPnL">+0.0R</span>
+                    </div>
+                </div>
+
+                <div class="journal-controls-modern">
+                    <div class="journal-filters-group">
+                        <div class="filter-select-wrapper">
+                            <select id="filterAsset" class="form-input">
+                                <option value="">Все активы</option>
+                                <option value="BTCUSDT">BTCUSDT</option>
+                                <option value="ETHUSDT">ETHUSDT</option>
+                                <option value="XAUUSD">XAUUSD</option>
+                                <option value="EURUSD">EURUSD</option>
+                                <option value="SOLUSDT">SOLUSDT</option>
+                            </select>
+                        </div>
+                        <div class="filter-select-wrapper">
+                            <select id="filterResult" class="form-input">
+                                <option value="">Все результаты</option>
+                                <option value="win">Прибыль</option>
+                                <option value="loss">Убыток</option>
+                                <option value="breakeven">Без результата</option>
+                            </select>
+                        </div>
+                        <div class="search-wrapper-modern">
+                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="journalSearch" class="form-input" placeholder="Поиск по сделкам..." />
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="addTradeBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Добавить сделку</button>
+                </div>
+
+                <div class="journal-table-modern glass-panel">
+                    <div class="table-wrapper-modern">
+                        <table class="journal-table-styled">
+                            <thead>
+                                <tr>
+                                    <th data-key="date">Date</th>
+                                    <th data-key="asset">Asset</th>
+                                    <th data-key="side">Side</th>
+                                    <th data-key="entry">Entry</th>
+                                    <th data-key="exit">Exit</th>
+                                    <th data-key="rr">RR</th>
+                                    <th data-key="result">Result</th>
+                                    <th data-key="status">Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="journalBody">
+                                <tr><td colspan="9" style="text-align:center;padding:48px 0;color:var(--text-secondary);">Пока нет сделок. Начните добавлять!</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            CALENDAR (ЭТАП 4)
+            ============================================================ -->
+            <div id="section-calendar" class="section-content">
+                <div class="calendar-wrapper-modern glass-panel">
+                    <div class="calendar-nav-modern">
+                        <div class="calendar-nav-controls">
+                            <button class="calendar-nav-btn" id="prevMonth"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+                            <h2 class="calendar-month-title" id="calendarMonth">January 2026</h2>
+                            <button class="calendar-nav-btn" id="nextMonth"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+                        </div>
+                        <span class="calendar-today-badge">Today</span>
+                    </div>
+                    <div class="calendar-grid-modern" id="calendarGrid"></div>
+                    <div class="calendar-events-section">
+                        <div class="calendar-events-header">
+                            <h3>Сделки за <span id="selectedDateTradesLabel">этот день</span></h3>
+                            <span class="events-count" id="dayTradesCount">0 сделок</span>
+                        </div>
+                        <div class="events-list-modern" id="dayTradesList" style="margin-bottom:20px;">
+                            <div class="no-events">Нет сделок в этот день</div>
+                        </div>
+                        <div class="calendar-events-header">
+                            <h3>События на <span id="selectedDateLabel">сегодня</span></h3>
+                            <span class="events-count" id="eventsCount">0 событий</span>
+                        </div>
+                        <div class="events-list-modern" id="eventsList">
+                            <div class="no-events">Нет событий на этот день</div>
+                        </div>
+                        <div class="add-event-form-modern">
+                            <input type="text" id="eventInput" class="form-input" placeholder="Добавить новое событие..." />
+                            <div class="filter-select-wrapper" style="min-width:120px;">
+                                <select id="eventType" class="form-input">
+                                    <option value="trade">Сделка</option>
+                                    <option value="alert">Оповещение</option>
+                                    <option value="meeting">Встреча</option>
+                                    <option value="analysis">Анализ</option>
+                                    <option value="break">Перерыв</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" id="addEventBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Добавить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            ANALYTICS (ЭТАП 5)
+            ============================================================ -->
+            <div id="section-analytics" class="section-content">
+                <div class="panel-empty-state" id="analyticsEmptyBanner" style="display:none;"></div>
+                <div class="analytics-row-top" id="analyticsMainContent">
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(124, 92, 252, 0.15);color:var(--brand-purple);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></div>
+                        <div><span class="kpi-label">Total P&L</span><span class="kpi-value" id="aTotalPnl">+0.0R</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(67, 198, 160, 0.15);color:var(--brand-green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                        <div><span class="kpi-label">Win Rate</span><span class="kpi-value" id="aWinRate">0%</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(251, 191, 36, 0.15);color:var(--brand-yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                        <div><span class="kpi-label">Profit Factor</span><span class="kpi-value" id="aProfitFactor">0.00</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(239, 68, 68, 0.15);color:var(--brand-red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        <div><span class="kpi-label">Avg RR</span><span class="kpi-value" id="aAvgRR">0.0</span></div>
+                    </div>
+                </div>
+
+                <div class="analytics-row-middle">
+                    <div class="analytics-chart-card glass-panel">
+                        <div class="panel-header"><h3>Equity Curve</h3></div>
+                        <div class="chart-container"><canvas id="analyticsEquityChart"></canvas></div>
+                    </div>
+                    <div class="analytics-chart-card glass-panel">
+                        <div class="panel-header"><h3>Monthly Performance</h3></div>
+                        <div class="chart-container"><canvas id="analyticsMonthlyChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="analytics-row-bottom">
+                    <div class="analytics-stat-card glass-panel">
+                        <div class="panel-header"><h3>Общая статистика</h3></div>
+                        <div class="stats-list">
+                            <div class="stat-item"><span>Всего сделок</span><span id="aTotalTrades">0</span></div>
+                            <div class="stat-item"><span>Прибыльных</span><span class="green" id="aWinningTrades">0</span></div>
+                            <div class="stat-item"><span>Убыточных</span><span class="red" id="aLosingTrades">0</span></div>
+                            <div class="stat-item"><span>Средняя прибыль</span><span class="green" id="aAvgWin">+0.0R</span></div>
+                            <div class="stat-item"><span>Средний убыток</span><span class="red" id="aAvgLoss">-0.0R</span></div>
+                            <div class="stat-item"><span>Лучший день</span><span class="green" id="aBestDay">—</span></div>
+                            <div class="stat-item"><span>Худший день</span><span class="red" id="aWorstDay">—</span></div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-stat-card glass-panel">
+                        <div class="panel-header"><h3>Распределение по активам</h3></div>
+                        <div class="asset-distribution">
+                            <div class="donut-small-wrapper" style="width:140px;height:140px;margin:0 auto;">
+                                <canvas id="analyticsAssetDonutChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-stat-card glass-panel">
+                        <div class="panel-header"><h3>Сводка по сделкам</h3></div>
+                        <div class="summary-grid">
+                            <div><span class="summary-label">Лучшая сделка</span><span class="summary-val green" id="aBestTrade">+0.0R</span></div>
+                            <div><span class="summary-label">Худшая сделка</span><span class="summary-val red" id="aWorstTrade">-0.0R</span></div>
+                            <div><span class="summary-label">Макс. серия побед</span><span class="summary-val green" id="aMaxWinStreak">0</span></div>
+                            <div><span class="summary-label">Макс. серия поражений</span><span class="summary-val red" id="aMaxLossStreak">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            PERFORMANCE
+            ============================================================ -->
+            <div id="section-performance" class="section-content">
+                <div class="panel-empty-state" id="performanceEmptyBanner" style="display:none;"></div>
+                <div class="analytics-row-top" id="performanceMainContent">
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(124, 92, 252, 0.15);color:var(--brand-purple);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                        <div><span class="kpi-label">Общая доходность</span><span class="kpi-value" id="perfTotalReturn">+0.0R</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(67, 198, 160, 0.15);color:var(--brand-green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></div>
+                        <div><span class="kpi-label">Лучший месяц</span><span class="kpi-value" id="perfBestMonth">—</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(251, 191, 36, 0.15);color:var(--brand-yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                        <div><span class="kpi-label">Лучшая сессия</span><span class="kpi-value" id="perfBestSession">—</span></div>
+                    </div>
+                    <div class="analytics-kpi-card glass-panel">
+                        <div class="kpi-icon" style="background:rgba(239, 68, 68, 0.15);color:var(--brand-red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        <div><span class="kpi-label">Сделок всего</span><span class="kpi-value" id="perfTotalTrades">0</span></div>
+                    </div>
+                </div>
+
+                <div class="analytics-row-middle">
+                    <div class="analytics-chart-card glass-panel">
+                        <div class="panel-header"><h3>Кривая доходности</h3></div>
+                        <div class="chart-container"><canvas id="perfEquityChart"></canvas></div>
+                    </div>
+                    <div class="analytics-chart-card glass-panel">
+                        <div class="panel-header"><h3>Помесячная динамика</h3></div>
+                        <div class="chart-container"><canvas id="perfMonthlyChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="analytics-row-middle">
+                    <div class="analytics-chart-card glass-panel" style="grid-column: 1 / -1;">
+                        <div class="panel-header"><h3>Эффективность по торговым сессиям</h3></div>
+                        <div class="chart-container"><canvas id="perfSessionsChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            AI ASSISTANT (ЭТАП 6)
+            ============================================================ -->
+            <div id="section-intelligence" class="section-content">
+                <div class="ai-workspace glass-panel">
+                    <div class="ai-disclaimer-bar" data-key="ai_disclaimer">KriptoDanik AI не является финансовым советником, не даёт торговых сигналов и не предсказывает направление рынка. Он помогает вам соблюдать собственную торговую стратегию, правила и дисциплину.</div>
+                    <div class="ai-chat-area" id="aiChatArea">
+                        <div class="ai-messages" id="aiMessages"></div>
+                    </div>
+                    <div class="ai-input-area">
+                        <div class="ai-suggestions" id="aiSuggestions">
+                            <button class="ai-chip" data-query="Проанализировать сегодняшние сделки"><span class="chip-icon">📊</span> Проанализировать сегодняшние сделки</button>
+                            <button class="ai-chip" data-query="Проверить ошибки"><span class="chip-icon">🔍</span> Проверить ошибки</button>
+                            <button class="ai-chip" data-query="Разобрать психологию"><span class="chip-icon">🧠</span> Разобрать психологию</button>
+                            <button class="ai-chip" data-query="Дай рекомендации"><span class="chip-icon">💡</span> Дай рекомендации</button>
+                        </div>
+                        <div class="ai-input-row">
+                            <div class="ai-input-wrapper"><input type="text" id="aiInput" class="form-input" placeholder="Спросите у вашего AI Коуча..." /></div>
+                            <button class="btn-primary" id="askBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Отправить</button>
+                            <button class="btn-icon-clear" id="clearChatBtn" title="Очистить диалог"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            GUARDIAN (ЭТАП 7)
+            ============================================================ -->
+            <div id="section-guardian" class="section-content">
+                <div class="guardian-wrapper">
+                    <div class="guardian-row-top">
+                        <div class="guardian-kpi-card glass-panel">
+                            <div class="kpi-icon" style="background:rgba(124, 92, 252, 0.15);color:var(--brand-purple);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                            <div>
+                                <span class="kpi-label">Discipline Score</span>
+                                <div class="kpi-value" style="font-size:32px; display:flex; align-items:center; gap:8px;">
+                                    <span id="guardianScore">—</span>
+                                    <span class="score-badge" id="guardianScoreBadge">Отлично</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="guardian-kpi-card glass-panel">
+                            <div class="kpi-icon" style="background:rgba(67, 198, 160, 0.15);color:var(--brand-green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                            <div>
+                                <span class="kpi-label">Статус дня</span>
+                                <div class="kpi-value" style="font-size:24px; font-weight:600;">
+                                    <span id="guardianDayStatus">Анализ...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="guardian-kpi-card glass-panel">
+                            <div class="kpi-icon" style="background:rgba(251, 191, 36, 0.15);color:var(--brand-yellow);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                            <div>
+                                <span class="kpi-label">Серия дисциплины</span>
+                                <div class="kpi-value" style="font-size:28px;">
+                                    <span id="guardianStreak">0 дней</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="guardian-row-middle">
+                        <div class="guardian-panel glass-panel">
+                            <div class="panel-header"><h3>Дисциплина по дням</h3></div>
+                            <div class="chart-container" style="height:180px;"><canvas id="guardianDisciplineChart"></canvas></div>
+                        </div>
+                        <div class="guardian-panel glass-panel">
+                            <div class="panel-header"><h3>Соблюдение правил</h3></div>
+                            <div class="rule-status-list" id="guardianRulesList"></div>
+                        </div>
+                    </div>
+
+                    <div class="guardian-row-bottom">
+                        <div class="guardian-panel glass-panel">
+                            <div class="panel-header"><h3>История</h3><span class="badge" id="guardianHistoryCount">0</span></div>
+                            <div class="guardian-timeline" id="guardianTimeline"></div>
+                        </div>
+                        <div class="guardian-panel glass-panel">
+                            <div class="panel-header"><h3>Рекомендации наставника</h3></div>
+                            <div class="guardian-recommendations" id="guardianRecommendations"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            AI SCANNER (v1.1.0)
+            IMPORTANT — honesty note for future maintainers: this build has
+            no vision-AI backend wired up (static vanilla JS app, no
+            server, no API key). Every field on the review screen starts
+            as "Not detected" and is filled in by the user reading their
+            own chart — this is the exact "cannot be reliably detected"
+            path the product spec itself defines, not a placeholder for
+            something secretly faked. Confirming hands off to the SAME
+            existing Add Trade modal/validation/save path — no second
+            trade-storage system.
+            ============================================================ -->
+            <div id="section-scanner" class="section-content">
+                <div id="scannerUploadView">
+                    <div class="academy-header">
+                        <h2 data-key="scanner_title">AI Scanner</h2>
+                        <p class="academy-header-sub" data-key="scanner_sub">Upload a chart screenshot to start a structured trade review — attach it to your Journal entry.</p>
+                    </div>
+                    <div class="scanner-honesty-note" data-key="scanner_honesty_note">This build doesn't have a connected vision-AI model yet, so nothing is auto-detected from your screenshot. You'll get a structured review form to fill in yourself, with the screenshot attached to the trade for later reference.</div>
+                    <div class="scanner-dropzone glass-panel" id="scannerDropzone">
+                        <input type="file" id="scannerFileInput" accept="image/png,image/jpeg,image/webp" capture="environment" style="display:none;" />
+                        <div class="scanner-dropzone-icon">📊</div>
+                        <p class="scanner-dropzone-title" data-key="scanner_upload_title">Upload a chart screenshot</p>
+                        <p class="scanner-dropzone-sub" data-key="scanner_upload_sub">PNG, JPG or WEBP, up to 25MB · drag & drop or paste</p>
+                        <button class="btn-primary" id="scannerUploadBtn" data-key="scanner_choose_file">Choose file</button>
+                    </div>
+                </div>
+
+                <div id="scannerReviewView" style="display:none;">
+                    <button class="btn-secondary" id="scannerBackBtn" style="margin-bottom:16px;">← <span data-key="scanner_start_over">Start over</span></button>
+                    <div class="scanner-review glass-panel">
+                        <div class="scanner-review-grid">
+                            <div class="scanner-screenshot-preview">
+                                <img id="scannerPreviewImg" alt="Chart screenshot" />
+                            </div>
+                            <div class="scanner-review-form">
+                                <h3 data-key="scanner_result_title">Scan Result</h3>
+                                <p class="lesson-note" id="scannerConfidenceNote"></p>
+                                <div class="scanner-analysis-bar">
+                                    <button type="button" class="btn-secondary" id="scannerAnalyzeBtn">🔎 <span data-key="scanner_analyze">Analyze screenshot</span></button>
+                                    <span id="scannerAnalysisStatus" class="scanner-analysis-status" aria-live="polite"></span>
+                                </div>
+                                <div class="scanner-ocr-box" id="scannerOcrBox">
+                                    <div class="scanner-ocr-label" data-key="scanner_ocr_label">OCR text found on screenshot</div>
+                                    <div id="scannerOcrText" class="scanner-ocr-text"></div>
+                                </div>
+
+                                <div class="scanner-field-row">
+                                    <div class="psc-field"><label data-key="scanner_asset">Asset</label><input type="text" class="form-input" id="scannerAsset" placeholder="BTCUSDT" /></div>
+                                    <div class="psc-field"><label data-key="scanner_direction">Direction</label>
+                                        <div class="psc-direction">
+                                            <button type="button" class="active" data-dir="long" id="scannerDirLong">LONG</button>
+                                            <button type="button" data-dir="short" id="scannerDirShort">SHORT</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scanner-field-row">
+                                    <div class="psc-field"><label data-key="scanner_timeframe">Timeframe</label><input type="text" class="form-input" id="scannerTimeframe" placeholder="5M" /></div>
+                                    <div class="psc-field"><label data-key="scanner_entry">Entry</label><input type="number" class="form-input" id="scannerEntry" step="any" /></div>
+                                </div>
+                                <div class="scanner-field-row">
+                                    <div class="psc-field"><label data-key="scanner_stoploss">Stop Loss</label><input type="number" class="form-input" id="scannerStopLoss" step="any" /></div>
+                                    <div class="psc-field"><label data-key="scanner_takeprofit">Take Profit</label><input type="number" class="form-input" id="scannerTakeProfit" step="any" /></div>
+                                </div>
+                                <div class="psc-field"><label data-key="scanner_setup">Setup / notes</label><textarea class="form-input" id="scannerSetup" rows="2"></textarea></div>
+
+                                <h5 style="margin-top:16px;" data-key="scanner_structures_title">Detected Structures</h5>
+                                <p class="lesson-note" data-key="scanner_structures_note">Nothing is auto-detected — check any structures you identify on this chart yourself.</p>
+                                <div class="scanner-structures-grid" id="scannerStructuresGrid"></div>
+
+                                <p class="psc-disclaimer" data-key="scanner_disclaimer">This is not a guaranteed signal or a promise of profit — only a structured way to log what you see on your own chart. Confidence reflects manual review, not an automated probability.</p>
+
+                                <div class="scanner-actions">
+                                    <button class="btn-secondary" id="scannerCancelBtn" data-key="scanner_cancel">Cancel</button>
+                                    <button class="btn-primary" id="scannerConfirmBtn" data-key="scanner_confirm">Confirm → Add to Journal</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lightweight screenshot lightbox — used by both the Scanner
+                 review preview and the Journal's "view screenshot" action. -->
+            <div id="screenshotLightbox" class="onboarding-overlay">
+                <div class="lightbox-inner">
+                    <button class="lightbox-close" id="lightboxCloseBtn">×</button>
+                    <img id="lightboxImg" alt="Trade screenshot" />
+                </div>
+            </div>
+
+            <!-- ============================================================
+            ACADEMY (v1.0.8)
+            All content is rendered from academyLessons (JS, RU/EN) — this
+            markup only provides the two view containers (grid + lesson).
+            ============================================================ -->
+            <div id="section-academy" class="section-content">
+                <div id="academyGridView">
+                    <div class="academy-header">
+                        <h2 data-key="academy_header_title">Learn the system. Trade with a plan.</h2>
+                        <p class="academy-header-sub" data-key="academy_header_sub">Short, practical lessons on risk, position size, leverage, and liquidation — plus a real calculator.</p>
+                    </div>
+                    <div class="academy-grid" id="academyGrid"></div>
+
+                </div>
+
+                <div id="academyLessonView" style="display:none;">
+                    <button class="btn-secondary" id="academyBackBtn" style="margin-bottom:16px;">← <span data-key="academy_back">Back to Academy</span></button>
+                    <div class="academy-lesson glass-panel" id="academyLessonBody"></div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            STRATEGY LIBRARY
+            ============================================================ -->
+            <div id="section-strategy" class="section-content">
+                <div class="module-header glass-panel"><div><span class="module-eyebrow">TRADING SYSTEM</span><h2>Библиотека стратегий</h2><p>Храни свои правила в одном месте и сверяй реальные сделки с планом.</p></div><button class="btn-primary" id="strategyAddBtn">+ Новая стратегия</button></div>
+                <div class="module-toolbar glass-panel"><input id="strategySearch" class="form-input" placeholder="Поиск стратегии..."/><select id="strategyFilter" class="form-input"><option value="all">Все</option><option value="active">Активные</option><option value="archived">Архив</option></select></div>
+                <div id="strategyGrid" class="strategy-grid"></div><div id="strategyEmpty" class="module-empty glass-panel"><div class="module-empty-icon">♜</div><h3>Стратегий пока нет</h3><p>Создай первую стратегию: условия входа, стоп, выход, фильтры и правила дисциплины.</p><button class="btn-primary" id="strategyEmptyBtn">Создать стратегию</button></div>
+            </div>
+            <div id="section-marketpulse" class="section-content">
+                <div class="module-header glass-panel marketpulse-header"><div><span class="module-eyebrow">MARKET PULSE · LIVE CONTEXT</span><h2>Market Pulse</h2><p>Экономический календарь, рыночные данные и новости. Красное — высокая важность, жёлтое — средняя, серое — низкая. Вкладка определяет, какие события сейчас важны для рынка.</p></div><button class="btn-secondary" id="marketRefreshBtn">↻ Обновить</button></div>
+                <div class="market-modebar glass-panel"><div><span class="module-eyebrow">РЫНОК</span><b>Что отслеживать</b></div><div class="market-mode-switch" role="tablist" aria-label="Рынок"><button class="market-mode-btn active" data-market-mode="crypto" role="tab">₿ Крипта</button><button class="market-mode-btn" data-market-mode="forex" role="tab">$ Форекс</button></div><div class="market-impact-legend"><span class="impact-dot high"></span> Важно <span class="impact-dot medium"></span> Средне <span class="impact-dot low"></span> Низко</div></div>
+                <div class="market-session-grid">
+                    <article class="glass-panel market-session-card"><span class="module-eyebrow">CURRENT SESSION</span><div class="market-session-main"><b id="marketCurrentSession">—</b><span id="marketSessionStatus">—</span></div><div class="market-session-times"><span>UTC</span><b id="marketSessionClock">—</b></div><div class="market-session-note" id="marketPreviousSession">Предыдущая сессия: —</div></article>
+                    <article class="glass-panel market-context-card"><span class="module-eyebrow">MARKET IMPACT</span><h3 id="marketContextTitle">Крипта</h3><p id="marketStrategyContext">Загрузка факторов, которые сейчас сильнее всего влияют на выбранный рынок.</p><div class="market-context-tags" id="marketStrategyTags"></div></article>
+                </div>
+                <div class="pulse-meta glass-panel"><div><span class="module-eyebrow">LIVE STATUS</span><b id="marketLiveStatus">Ожидание данных</b></div><div><span class="module-eyebrow">ОБНОВЛЕНО</span><b id="marketLastUpdated">—</b></div><div><span class="module-eyebrow">ЗАДЕРЖКА</span><b id="marketLatency">—</b></div><div><span class="module-eyebrow">ИСТОЧНИК</span><b id="marketSourceLabel">Binance public API</b></div></div>
+                <div class="pulse-grid" id="marketPulseGrid"></div>
+                <div class="market-calendar-section glass-panel"><div class="market-section-head"><div><span class="module-eyebrow">ECONOMIC CALENDAR</span><h3>Экономические события</h3><p>Формат в стиле Forex Factory: важность события + страна + фактическое/прогноз/предыдущее значение.</p></div><span class="market-feed-badge" id="marketCalendarStatus">Загрузка…</span></div><div id="marketCalendar" class="market-calendar"></div></div>
+                <div class="market-news-section glass-panel"><div class="market-section-head"><div><span class="module-eyebrow">NEWS FLOW</span><h3>Новости и влияние</h3><p>Показываем только полученные публикации. Никаких придуманных новостей. Для каждой новости отмечаем, на что она потенциально влияет.</p></div><span class="market-feed-badge" id="marketNewsStatus">Загрузка…</span></div><div id="marketNews" class="market-news-list"></div></div>
+                <div class="market-analysis-grid">
+                    <article class="glass-panel market-analysis-card"><span class="module-eyebrow">AI MARKET ANALYSIS</span><h3>Что сейчас важно</h3><div id="marketAiAnalysis"><p class="muted">Обнови данные, чтобы получить нейтральный разбор текущего контекста.</p></div></article>
+                    <article class="glass-panel market-links-card"><span class="module-eyebrow">PRIMARY SOURCES</span><h3>Первоисточники</h3><p>Открывай источник перед принятием решений. Внешние данные помечаются временем получения.</p><div class="market-source-links"><a href="https://www.federalreserve.gov/newsevents/calendar.htm" target="_blank" rel="noopener">Federal Reserve</a><a href="https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html" target="_blank" rel="noopener">ECB</a><a href="https://www.bls.gov/schedule/news_release/" target="_blank" rel="noopener">BLS</a><a href="https://www.binance.com/en/support/announcement" target="_blank" rel="noopener">Binance</a></div></article>
+                </div>
+                <div class="market-note glass-panel"><b>Важно:</b> Market Pulse показывает фактические данные и отмечает важность событий. Он не говорит «покупать» или «продавать» и не заменяет торговый план.</div>
+            </div>
+            <!-- ============================================================
+            SETTINGS (ЭТАП 8)
+            ============================================================ -->
+            <div id="section-settings" class="section-content">
+                <div class="settings-wrapper glass-panel">
+                    
+                    <div class="settings-nav">
+                        <button class="settings-tab-btn active" data-tab="profile">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Профиль
+                        </button>
+                        <button class="settings-tab-btn" data-tab="trading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+                            Торговый профиль
+                        </button>
+                        <button class="settings-tab-btn" data-tab="appearance">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            Внешний вид
+                        </button>
+                        <button class="settings-tab-btn" data-tab="data">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Данные
+                        </button>
+                        <button class="settings-tab-btn" data-tab="about">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            О приложении
+                        </button>
+                    </div>
+
+                    <div class="settings-content">
+                        
+                        <div class="settings-tab-content active" id="settings-profile">
+                            <div class="settings-grid">
+                                <div class="settings-profile-card glass-panel">
+                                    <div class="profile-avatar-wrapper">
+                                        <div class="profile-avatar" id="settingsAvatar">T</div>
+                                        <div class="avatar-badge" id="settingsPlanBadge">Free</div>
+                                        <button class="avatar-edit-btn" id="avatarEditBtn" title="Изменить фото">✎</button>
+                                        <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" capture="environment" style="display:none;" />
+                                    </div>
+                                    <div class="profile-info-list">
+                                        <div class="info-row"><span>Никнейм</span><span id="settingsUsername">Загрузка...</span></div>
+                                        <div class="info-row"><span>Email</span><span id="settingsEmail">user@kriptodanik.ai</span></div>
+                                        <div class="info-row"><span>Дата регистрации</span><span id="settingsMemberSince">—</span></div>
+                                        <div class="info-row"><span>Тип аккаунта</span><span class="badge-pro" id="settingsPlan">FREE</span></div>
+                                        <div class="info-row"><span>Версия</span><span>v1.3.0</span></div>
+                                    </div>
+                                    <button class="btn-primary" id="saveProfileBtn" style="width:100%;margin-top:16px;justify-content:center;">Сохранить профиль</button>
+                                </div>
+
+                                <div class="settings-form-card glass-panel">
+                                    <h4>Редактировать профиль</h4>
+                                    <div class="settings-form">
+                                        <div class="form-group"><label>Ваше имя</label><input type="text" id="settingsName" class="form-input" placeholder="Введите имя" /></div>
+                                        <div class="form-group"><label>Email</label><input type="email" id="settingsEmailInput" class="form-input" placeholder="user@example.com" /></div>
+                                        <div class="form-group"><label>Никнейм</label><input type="text" id="settingsUsernameInput" class="form-input" placeholder="nickname" /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-tab-content" id="settings-trading">
+                            <div class="settings-form-card glass-panel">
+                                <h4>Торговые настройки</h4>
+                                <div class="settings-form">
+                                    <div class="form-group"><label>Размер депозита ($)</label><input type="number" id="settingsCapital" class="form-input" placeholder="10000" /></div>
+                                    <div class="form-group"><label>Риск на сделку (%)</label>
+                                        <div class="filter-select-wrapper"><select id="settingsRisk" class="form-input"><option value="0.5">0.5%</option><option value="0.75">0.75%</option><option value="1.0" selected>1.0%</option><option value="1.5">1.5%</option><option value="2.0">2.0%</option></select></div>
+                                    </div>
+                                    <div class="form-group"><label>Максимальный дневной убыток ($)</label><input type="number" id="settingsDailyLoss" class="form-input" placeholder="500" /></div>
+                                    <div class="form-group"><label>Дневная цель ($)</label><input type="number" id="settingsDailyTarget" class="form-input" placeholder="800" /></div>
+                                    <div class="form-group"><label>Предпочитаемый RR</label>
+                                        <div class="filter-select-wrapper"><select id="settingsRR" class="form-input"><option value="1:1">1:1</option><option value="1:2" selected>1:2</option><option value="1:3">1:3</option><option value="1:4">1:4</option></select></div>
+                                    </div>
+                                    <div class="form-group"><label>Тип торговли</label>
+                                        <div class="filter-select-wrapper"><select id="settingsTradingStyle" class="form-input"><option value="scalping">Scalping</option><option value="day" selected>Day Trading</option><option value="swing">Swing</option></select></div>
+                                    </div>
+                                    <div class="form-group"><label>Предпочитаемая сессия</label>
+                                        <div class="filter-select-wrapper"><select id="settingsSession" class="form-input"><option value="london">London</option><option value="ny" selected>New York</option><option value="asia">Asian</option><option value="sydney">Sydney</option></select></div>
+                                    </div>
+                                    <button class="btn-primary" id="saveTradingBtn" style="width:100%;justify-content:center;margin-top:8px;">Сохранить торговые настройки</button>
+                                </div>
+                            </div>
+                            <div class="settings-form-card danger-zone glass-panel" style="margin-top:16px;">
+                                <h4 style="color:var(--brand-red);">Trading Profile</h4>
+                                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">Сбрасывает только профиль и мастер настройки (имя, баланс, цели, стратегию). Journal, Calendar, Analytics, Performance и история Guardian не затрагиваются.</p>
+                                <button class="data-action-btn danger" id="resetTradingProfileBtn" style="width:100%;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Сбросить Trading Profile</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-tab-content" id="settings-appearance">
+                            <div class="settings-grid">
+                                <div class="settings-form-card glass-panel">
+                                    <h4>Оформление</h4>
+                                    <div class="settings-form">
+                                        <div class="form-group"><label>Тема</label>
+                                            <div class="theme-options">
+                                                <button class="theme-option active" data-theme="dark" style="background:#0d1018;border-color:var(--brand-purple);"><span style="color:#fff;">Dark</span></button>
+                                                <button class="theme-option" data-theme="light" style="background:#f4f7ff;border-color:var(--border-color);"><span style="color:#0d1018;">Light</span></button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label>Акцентный цвет</label>
+                                            <div class="accent-options">
+                                                <button class="accent-option active" style="background:#7c5cfc;"></button>
+                                                <button class="accent-option" style="background:#4f7cff;"></button>
+                                                <button class="accent-option" style="background:#43c6a0;"></button>
+                                                <button class="accent-option" style="background:#fbbf24;"></button>
+                                                <button class="accent-option" style="background:#ef4444;"></button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label>Язык приложения</label>
+                                            <div class="filter-select-wrapper"><select id="settingsLang" class="form-input"><option value="ru">Русский</option><option value="en">English</option></select></div>
+                                        </div>
+                                        <div class="form-group"><label>Формат даты</label>
+                                            <div class="filter-select-wrapper"><select id="settingsDateFormat" class="form-input"><option value="DD.MM.YYYY">DD.MM.YYYY</option><option value="MM/DD/YYYY">MM/DD/YYYY</option><option value="YYYY-MM-DD">YYYY-MM-DD</option></select></div>
+                                        </div>
+                                        <div class="form-group"><label>Валюта</label>
+                                            <div class="filter-select-wrapper"><select id="settingsCurrency" class="form-input"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="RUB">RUB (₽)</option></select></div>
+                                        </div>
+                                        <button class="btn-primary" id="saveAppearanceBtn" style="width:100%;justify-content:center;margin-top:8px;">Применить настройки</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-tab-content" id="settings-data">
+                            <div class="settings-grid">
+                                <div class="settings-form-card glass-panel">
+                                    <h4>Экспорт</h4>
+                                    <div class="data-actions-grid">
+                                        <button class="data-action-btn" id="exportTradesBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Экспорт журнала (CSV)</button>
+                                        <button class="data-action-btn" id="exportJournalBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Экспорт всего (JSON)</button>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form-card glass-panel">
+                                    <h4>Импорт</h4>
+                                    <div class="data-actions-grid">
+                                        <button class="data-action-btn" id="importDataBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Импорт данных (JSON)</button>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form-card danger-zone glass-panel">
+                                    <h4 style="color:var(--brand-red);">Опасная зона</h4>
+                                    <button class="data-action-btn danger" id="clearAllDataBtn" style="width:100%;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Очистить все данные</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-tab-content" id="settings-about">
+                            <div class="settings-grid">
+                                <div class="settings-form-card glass-panel" style="text-align:center;">
+                                    <div class="logo" style="justify-content:center;margin-bottom:20px;">
+                                        <div class="logo-icon">KD</div>
+                                        <div>
+                                            <h2 style="font-size:24px;">KriptoDanik</h2>
+                                            <span style="font-size:14px;color:var(--text-secondary);">AI v1.8.2</span>
+                                        </div>
+                                    </div>
+                                    <p style="color:var(--text-secondary);margin-bottom:24px;font-size:14px;line-height:1.6;">
+                                        Ваш персональный AI-помощник для трейдинга.<br>
+                                        Аналитика, дисциплина и поддержка в одном приложении.
+                                    </p>
+                                    <div class="about-links">
+                                        <a href="https://t.me/kd040401" class="about-link" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2H3v16h5v4l6-4h7V2z"/></svg> Telegram</a>
+                                        <a href="mailto:support@kriptodanik.ai" class="about-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> support@kriptodanik.ai</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+
+        <!-- ============================================================
+        AUTHENTICATION
+        ============================================================ -->
+        <div id="kdAuthOverlay" class="kd-auth-overlay" hidden aria-hidden="true">
+            <div class="kd-auth-modal" role="dialog" aria-modal="true" aria-labelledby="kdAuthTitle">
+                <button type="button" class="kd-auth-close" id="kdAuthClose" aria-label="Закрыть">×</button>
+                <div class="kd-auth-brand" aria-hidden="true">KD</div>
+                <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9b8cff;font-weight:800;">KriptoDanik AI</div>
+                <h2 id="kdAuthTitle">Регистрация в KriptoDanik AI</h2>
+                <p class="kd-auth-subtitle" id="kdAuthSubtitle">Создай аккаунт, чтобы открыть торговый профиль и получить 21 день полного доступа.</p>
+
+                <div class="kd-auth-tabs" role="tablist" aria-label="Авторизация">
+                    <button type="button" data-auth-tab="login" role="tab" aria-controls="kdLoginForm">Войти</button>
+                    <button type="button" data-auth-tab="signup" role="tab" aria-controls="kdSignupForm" class="active">Регистрация</button>
+                </div>
+
+                <form id="kdLoginForm" class="kd-auth-form" hidden autocomplete="on">
+                    <label>Email
+                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>Пароль
+                        <input type="password" name="password" autocomplete="current-password" placeholder="Минимум 8 символов" required>
+                    </label>
+                    <button type="submit" class="kd-auth-submit">Войти</button>
+                </form>
+
+                <form id="kdSignupForm" class="kd-auth-form" autocomplete="on">
+                    <label>Никнейм
+                        <input type="text" id="kdSignupUsername" name="username" autocomplete="nickname" minlength="2" maxlength="40" placeholder="Например, KriptoDanik" required>
+                    </label>
+                    <input type="hidden" id="kdSignupName" name="name" value="">
+                    <label>Email
+                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>Пароль
+                        <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Минимум 8 символов" required>
+                    </label>
+                    <button type="submit" class="kd-auth-submit">Создать аккаунт</button>
+                </form>
+
+                <div id="kdAuthPanel" class="kd-account-panel" hidden>
+                    <div class="kd-plan-card">
+                        <span>Твой аккаунт</span>
+                        <strong id="kdPanelPlan">FREE</strong>
+                        <small id="kdPanelUntil">21 дней полного доступа</small>
+                    </div>
+                    <button type="button" id="kdUpgradeButton" class="kd-pro-button">Перейти на PRO · 4,99 $</button>
+                    <button type="button" id="kdLogoutButton" class="kd-logout-button">Выйти</button>
+                </div>
+
+                <div id="kdAuthError" class="kd-auth-error" role="alert" aria-live="polite"></div>
+            </div>
+        </div>
+
+    <script defer src="chart.js?v=1.12.0"></script>
+    <script defer src="app.js?v=1.12.0"></script>
+    <script defer src="runtime-fixes.js?v=1.12.0"></script>
+    <script defer src="scanner-pro.js?v=1.12.0"></script>
+    <script defer src="auth.js?v=2.2.0"></script>
+    <script defer src="sw-register.js?v=1.12.0"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>KD SCREENER — XAUUSD</title>
+  <meta name="description" content="KD SCREENER — базовый realtime-движок XAUUSD.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="logo">KD</span><div><strong>KD SCREENER</strong><small>XAUUSD • LIVE MARKET ENGINE</small></div></div>
+      <div class="topbar-right">
+        <div class="connection"><span id="statusDot" class="dot demo"></span><span id="statusText">DEMO STREAM</span></div>
+        <button id="pauseBtn" class="control-btn" type="button">Пауза</button>
+      </div>
+    </header>
+
+    <section class="toolbar card">
+      <div class="toolbar-group"><span class="toolbar-label">Инструмент</span><button class="control-btn active" type="button" data-symbol="XAUUSD">XAUUSD</button></div>
+      <div class="toolbar-group"><span class="toolbar-label">Таймфрейм</span><button class="control-btn tf active" type="button" data-tf="5">5M</button><button class="control-btn tf" type="button" data-tf="15">15M</button><button class="control-btn tf" type="button" data-tf="60">1H</button></div>
+      <div class="toolbar-actions"><button id="tickBtn" class="control-btn primary" type="button">Новый тик</button><button id="resetBtn" class="control-btn" type="button">Сбросить</button></div>
+    </section>
+
+    <section class="quote-grid">
+      <article class="card quote"><span class="label">XAUUSD</span><strong id="price">—</strong><span id="change" class="muted">Ожидание данных</span></article>
+      <article class="card"><span class="label">BID</span><strong id="bid">—</strong></article>
+      <article class="card"><span class="label">ASK</span><strong id="ask">—</strong></article>
+      <article class="card"><span class="label">LAST UPDATE</span><strong id="updated">—</strong></article>
+    </section>
+
+    <section class="workspace">
+      <article class="card chart-card">
+        <div class="card-head"><div><span class="eyebrow">MARKET DATA</span><h2 id="chartTitle">XAUUSD / 5M</h2></div><span class="pill" id="feedMode">DEMO</span></div>
+        <div id="chart" class="chart"><div class="empty">Поток данных запускается…</div></div>
+      </article>
+
+      <aside class="side">
+        <article class="card">
+          <div class="card-head"><h3>Market Structure</h3><span class="pill muted-pill">BASE</span></div>
+          <div class="metric"><span>Previous High</span><b id="prevHigh">—</b></div>
+          <div class="metric"><span>Previous Low</span><b id="prevLow">—</b></div>
+          <div class="metric"><span>Current High</span><b id="currentHigh">—</b></div>
+          <div class="metric"><span>Current Low</span><b id="currentLow">—</b></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><h3>Engine</h3></div>
+          <div class="metric"><span>Ticks</span><b id="tickCount">0</b></div>
+          <div class="metric"><span>5M candles</span><b id="candleCount">0</b></div>
+          <div class="metric"><span>Data source</span><b id="source">DEMO</b></div>
+          <div class="engine-note" id="engineState">Поток запущен</div>
+        </article>
+      </aside>
+    </section>
+
+    <footer class="footer">KD SCREENER BASE v0.2 • Controls are functional; signal logic will be added after the market-data layer is verified.</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0A0A0F">
+  <title>KriptoDanik AI · Admin</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="./admin.css?v=1.0.1">
+  <style>
+    /* Mobile-safe fallback: keeps the owner panel styled even if the CSS asset is delayed/blocked. */
+    *{box-sizing:border-box}body{margin:0;background:#09090d;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif}.admin-shell{min-height:100vh;display:flex}.admin-sidebar{width:250px;border-right:1px solid #22222c;background:#0d0d13;padding:22px 16px;display:flex;flex-direction:column}.brand{display:flex;gap:12px;align-items:center;margin:4px 8px 35px}.brand-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:900;background:#171722;border:1px solid #343445}.brand b{display:block}.brand span{font-size:9px;letter-spacing:1.5px;color:#8e8e9b}.nav-item{width:100%;text-align:left;background:transparent;border:0;color:#9e9eab;padding:12px;border-radius:10px;margin:3px 0;font-size:14px;cursor:pointer}.nav-item:hover,.nav-item.active{background:#191922;color:#fff}.side-note{margin-top:auto;color:#666675;font-size:11px;line-height:1.5;padding:8px}.main{flex:1;padding:30px;max-width:1500px}.topbar{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}.eyebrow{font-size:10px;letter-spacing:1.8px;color:#858595;font-weight:800}.topbar h1{margin:5px 0 0;font-size:30px}.top-actions{display:flex;gap:18px;align-items:center;font-size:12px}.top-actions a{color:#a99cff;text-decoration:none}.status-dot{color:#76d49b}.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card,.panel{background:#111118;border:1px solid #242431;border-radius:16px;padding:20px}.card span,.card small{display:block;color:#858595}.card strong{display:block;font-size:30px;margin:10px 0}.card small{font-size:11px}.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.panel h2{margin:6px 0 18px;font-size:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.btn{border:1px solid #353543;background:#191921;color:#fff;border-radius:9px;padding:8px 12px;cursor:pointer}.health{display:grid;gap:10px}.health>div{display:flex;justify-content:space-between;padding:13px;border-radius:10px;background:#0c0c12}.ok{color:#72d39a}.muted{color:#8c8c99;line-height:1.6}.empty{min-height:180px;display:grid;place-items:center;text-align:center;align-content:center;gap:8px;color:#888895}.empty b{color:#ddd}.empty span{max-width:520px;font-size:13px}.search{background:#0b0b11;border:1px solid #292936;color:#fff;border-radius:9px;padding:9px 12px}.big{font-size:42px;font-weight:900}.nav-item:focus-visible,.btn:focus-visible{outline:2px solid #8f7cff;outline-offset:2px}@media(max-width:900px){.admin-sidebar{width:205px}.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.top-actions a{display:none}}@media(max-width:650px){.admin-sidebar{display:none}.main{padding:18px}.cards{grid-template-columns:1fr 1fr}.topbar h1{font-size:24px}}
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="brand"><div class="brand-icon">KD</div><div><b>KriptoDanik</b><span>ADMIN PANEL</span></div></div>
+      <nav>
+        <button class="nav-item active" data-view="overview">⌂ Обзор</button>
+        <button class="nav-item" data-view="users">♙ Пользователи</button>
+        <button class="nav-item" data-view="subscriptions">♕ Подписки</button>
+        <button class="nav-item" data-view="ai">◈ AI</button>
+        <button class="nav-item" data-view="market">◉ Market Pulse</button>
+        <button class="nav-item" data-view="system">⚙ Система</button>
+      </nav>
+      <div class="side-note">Закрытый раздел<br>KriptoDanik AI</div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div><span class="eyebrow">CONTROL CENTER</span><h1 id="viewTitle">Обзор</h1></div>
+        <div class="top-actions"><span class="status-dot">● Защищено</span><a href="../">← Вернуться в приложение</a></div>
+      </header>
+      <section id="overview" class="view active">
+        <div class="cards">
+          <article class="card"><span>Пользователи</span><strong id="usersCount">—</strong><small>подключение БД</small></article>
+          <article class="card"><span>Активные</span><strong id="activeCount">—</strong><small>последние 30 дней</small></article>
+          <article class="card"><span>Pro</span><strong id="proCount">—</strong><small>активные подписки</small></article>
+          <article class="card"><span>AI запросы</span><strong id="aiCount">—</strong><small>Coach + Scanner</small></article>
+        </div>
+        <div class="grid2">
+          <article class="panel"><div class="panel-head"><div><span class="eyebrow">SYSTEM HEALTH</span><h2>Состояние сервисов</h2></div><button id="refreshBtn" class="btn">Обновить</button></div>
+            <div class="health"><div><b>Frontend</b><span class="ok">● OK</span></div><div><b>Vercel API</b><span id="apiHealth">Проверка…</span></div><div><b>AI Coach</b><span id="coachHealth">Проверка…</span></div><div><b>Market Pulse</b><span id="marketHealth">Проверка…</span></div></div>
+          </article>
+          <article class="panel"><span class="eyebrow">ADMIN NOTE</span><h2>Следующий этап</h2><p class="muted">Панель подключена к серверной инфраструктуре. Реальные записи, тарифы, платежи и аналитика будут отображаться по мере подключения соответствующих API.</p></article>
+        </div>
+      </section>
+      <section id="users" class="view"><div class="panel"><div class="panel-head"><div><span class="eyebrow">USER MANAGEMENT</span><h2>Пользователи</h2></div><input id="userSearch" class="search" placeholder="Поиск…"></div><div class="empty"><b>Загрузка пользователей…</b><span>Данные загружаются из защищённого API.</span></div></div></section>
+      <section id="subscriptions" class="view"><div class="panel"><span class="eyebrow">BILLING</span><h2>Подписки</h2><div class="empty"><b>Раздел подписок</b><span>Здесь будут отображаться FREE / PRO и сроки подписок.</span></div></div></section>
+      <section id="ai" class="view"><div class="cards"><article class="card"><span>Coach</span><strong>—</strong><small>запросов</small></article><article class="card"><span>Scanner</span><strong>—</strong><small>сканов</small></article><article class="card"><span>Ошибки API</span><strong>—</strong><small>последние 24ч</small></article><article class="card"><span>Latency</span><strong>—</strong><small>среднее</small></article></div><div class="panel"><span class="eyebrow">AI MONITORING</span><h2>Мониторинг AI</h2><p class="muted">Инфраструктурные статусы и статистика AI.</p></div></section>
+      <section id="market" class="view"><div class="panel"><span class="eyebrow">MARKET DATA</span><h2>Market Pulse</h2><div class="health"><div><b>Calendar</b><span class="ok">● Frontend feed</span></div><div><b>News</b><span class="ok">● Frontend feed</span></div><div><b>Forex</b><span>ECB/reference feed</span></div></div></div></section>
+      <section id="system" class="view"><div class="grid2"><article class="panel"><span class="eyebrow">RELEASE</span><h2>Версия</h2><div class="big">v1.11.0</div><p class="muted">AI Scanner PRO + owner panel</p></article><article class="panel"><span class="eyebrow">SECURITY</span><h2>Доступ</h2><p class="muted">Админ-раздел закрыт и не предназначен для публичной индексации.</p></article></div></section>
+    </main>
+  </div>
+  <script src="./admin.js?v=1.0.1"></script>
+</body>
+</html>

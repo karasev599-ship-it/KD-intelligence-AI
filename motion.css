@@ -1,0 +1,42 @@
+/* KriptoDanik AI — premium visible motion layer v2 */
+:root{--kd-ease:cubic-bezier(.22,1,.36,1);--kd-glow:rgba(139,92,246,.30);--kd-green:rgba(67,198,160,.16)}
+.main{position:relative;isolation:isolate}
+.main::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 72% 10%,rgba(124,92,252,.17),transparent 27%),radial-gradient(circle at 25% 78%,rgba(168,85,247,.09),transparent 30%),radial-gradient(circle at 88% 80%,rgba(67,198,160,.055),transparent 24%);animation:kdAmbient 11s ease-in-out infinite alternate;transform-origin:center}
+.main::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,transparent 0%,rgba(124,92,252,.025) 35%,transparent 55%);background-size:220% 100%;animation:kdSweep 9s ease-in-out infinite}
+@keyframes kdAmbient{0%{opacity:.45;transform:scale(1) translate3d(-1%,0,0)}100%{opacity:1;transform:scale(1.08) translate3d(1%,2%,0)}}
+@keyframes kdSweep{0%,55%{background-position:120% 0}100%{background-position:-20% 0}}
+@keyframes kdFadeUp{from{opacity:0;transform:translateY(18px) scale(.985);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes kdGlow{0%,100%{box-shadow:0 0 0 rgba(139,92,246,0)}50%{box-shadow:0 0 34px var(--kd-glow)}}
+@keyframes kdShimmer{from{background-position:220% 0}to{background-position:-220% 0}}
+@keyframes kdPulseBorder{0%,100%{border-color:rgba(124,92,252,.18)}50%{border-color:rgba(124,92,252,.52)}}
+@keyframes kdOnline{0%,100%{box-shadow:0 0 0 rgba(67,198,160,0)}50%{box-shadow:0 0 0 5px rgba(67,198,160,.09)}}
+@keyframes kdSheen{0%{background-position:120% 0;opacity:0}15%{opacity:1}100%{background-position:-30% 0;opacity:0}}
+.main>header,.main>section,.main>.dashboard,.main>.dashboard-content,.main>.content,.main>div:not(.mobile-nav-scrim){animation:kdFadeUp .65s var(--kd-ease) both}
+.main>header{animation-delay:.04s}
+.main>section:nth-of-type(2),.main>.dashboard:nth-child(2),.main>.dashboard-content:nth-child(2){animation-delay:.10s}
+.main>section:nth-of-type(3),.main>.dashboard:nth-child(3),.main>.dashboard-content:nth-child(3){animation-delay:.16s}
+.main>section:nth-of-type(4),.main>.dashboard:nth-child(4),.main>.dashboard-content:nth-child(4){animation-delay:.22s}
+.main [class*="card"],.main [class*="panel"],.main [class*="stat"]{position:relative;isolation:isolate;transition:transform .35s var(--kd-ease),box-shadow .35s var(--kd-ease),border-color .35s ease,background-color .35s ease}
+.main [class*="card"]::after,.main [class*="panel"]::after,.main [class*="stat"]::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.055) 48%,transparent 70%);background-size:220% 100%;background-position:120% 0;opacity:0;z-index:-1}
+.main [class*="card"]:hover,.main [class*="panel"]:hover,.main [class*="stat"]:hover{transform:translateY(-4px);box-shadow:0 16px 44px rgba(0,0,0,.25),0 0 24px rgba(124,92,252,.08)}
+.main [class*="card"]:hover::after,.main [class*="panel"]:hover::after,.main [class*="stat"]:hover::after{animation:kdSheen 1.35s ease-out}
+.main [class*="ai"],.main [class*="hero"]{animation:kdGlow 4.2s ease-in-out infinite}
+.online-dot{animation:kdOnline 2.4s ease-in-out infinite}
+button,.btn,a.icon-btn{transition:transform .22s var(--kd-ease),opacity .22s ease,filter .22s ease,box-shadow .3s ease}
+button:hover,.btn:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 8px 24px rgba(124,92,252,.16)}
+button:active,.btn:active{transform:translateY(0) scale(.98)}
+.nav-item.active{animation:kdPulseBorder 3.5s ease-in-out infinite}
+.kd-shimmer{background-image:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.10) 42%,transparent 64%);background-size:220% 100%;animation:kdShimmer 2.8s linear infinite}
+
+/* v3 — laptop hero character from the approved KriptoDanik brand kit */
+@keyframes kdLaptopFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(0,-5px,0) scale(1.008)}}
+.brand-hero-art img{visibility:hidden!important}
+.brand-hero-art::after{content:"";position:absolute;inset:0;background:url('assets/laptop-character.png') center bottom/contain no-repeat;filter:drop-shadow(0 0 28px rgba(138,43,226,.28));animation:kdLaptopFloat 5.5s ease-in-out infinite;pointer-events:none}
+.brand-hero-art::before{content:"";position:absolute;left:20%;right:8%;bottom:4%;height:34%;background:radial-gradient(ellipse,rgba(138,43,226,.22),transparent 68%);filter:blur(18px);animation:kdLaptopGlow 4s ease-in-out infinite;pointer-events:none}
+@keyframes kdLaptopGlow{0%,100%{opacity:.45;transform:scale(.96)}50%{opacity:.85;transform:scale(1.04)}}
+@media(max-width:1100px){.brand-hero-art::after{opacity:.82}}
+@media(max-width:700px){.brand-hero-art::after{opacity:.72;background-size:contain;background-position:center bottom}.brand-hero-art::before{left:12%;right:2%;bottom:8%;height:30%}}
+@media(prefers-reduced-motion:reduce){.brand-hero-art::after,.brand-hero-art::before{animation:none!important}}
+
+@media(max-width:700px){.main [class*="card"]:hover,.main [class*="panel"]:hover,.main [class*="stat"]:hover{transform:none}.main::before{inset:-30%;opacity:.75}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

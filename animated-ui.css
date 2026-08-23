@@ -1,0 +1,202 @@
+/* ============================================================
+   KRIPTODANIK AI — LIVING UI LAYER
+   Safe visual enhancement: no layout or application logic changes.
+   ============================================================ */
+
+:root {
+  --kd-live-purple: rgba(124, 92, 252, .34);
+  --kd-live-purple-soft: rgba(124, 92, 252, .12);
+  --kd-live-green: rgba(67, 198, 160, .16);
+}
+
+/* Ambient page glow — deliberately subtle and pointer-events free. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 42vw;
+  height: 42vw;
+  min-width: 320px;
+  min-height: 320px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(80px);
+  opacity: .14;
+  animation: kdAmbientDrift 18s ease-in-out infinite alternate;
+}
+
+body::before {
+  top: -18vw;
+  right: -10vw;
+  background: var(--kd-live-purple);
+}
+
+body::after {
+  bottom: -22vw;
+  left: -14vw;
+  background: var(--kd-live-green);
+  animation-delay: -8s;
+}
+
+/* Premium entrance for major content without changing display logic. */
+.main > * {
+  animation: kdRiseIn .55s cubic-bezier(.2,.75,.25,1) both;
+}
+
+.main > *:nth-child(2) { animation-delay: .04s; }
+.main > *:nth-child(3) { animation-delay: .08s; }
+.main > *:nth-child(4) { animation-delay: .12s; }
+
+/* Cards feel alive on hover/focus. */
+.glass-panel,
+.stat-card,
+.dashboard-card,
+.card,
+.panel,
+.feature-card,
+.trade-card,
+.metric-card {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform .28s cubic-bezier(.2,.75,.25,1),
+    border-color .28s ease,
+    box-shadow .28s ease,
+    background-color .28s ease;
+}
+
+.glass-panel::after,
+.stat-card::after,
+.dashboard-card::after,
+.card::after,
+.panel::after,
+.feature-card::after,
+.trade-card::after,
+.metric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.055) 48%, transparent 70%);
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity .25s ease;
+}
+
+.glass-panel:hover,
+.stat-card:hover,
+.dashboard-card:hover,
+.card:hover,
+.panel:hover,
+.feature-card:hover,
+.trade-card:hover,
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.22), 0 0 0 1px var(--kd-live-purple-soft);
+}
+
+.glass-panel:hover::after,
+.stat-card:hover::after,
+.dashboard-card:hover::after,
+.card:hover::after,
+.panel:hover::after,
+.feature-card:hover::after,
+.trade-card:hover::after,
+.metric-card:hover::after {
+  opacity: 1;
+  animation: kdSheen 1.4s ease-out;
+}
+
+/* Buttons get a restrained glow rather than a distracting pulse. */
+.btn-primary,
+.nav-item.active,
+.icon-btn,
+.avatar {
+  transition: transform .22s cubic-bezier(.2,.75,.25,1), box-shadow .22s ease, filter .22s ease;
+}
+
+.btn-primary:hover,
+.nav-item.active:hover,
+.icon-btn:hover,
+.avatar:hover {
+  filter: brightness(1.08);
+}
+
+.btn-primary:active,
+.icon-btn:active,
+.nav-item:active {
+  transform: translateY(0) scale(.98);
+}
+
+/* Connected indicator gets a soft heartbeat. */
+.online-dot {
+  animation: kdOnlinePulse 2.4s ease-in-out infinite;
+}
+
+/* AI/assistant elements can gently breathe when present. */
+.ai-coach-card,
+.ai-coach-panel,
+.coach-card,
+.ai-card {
+  animation: kdCoachGlow 5s ease-in-out infinite;
+}
+
+/* Keep animation friendly for accessibility and low-power devices. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (max-width: 700px) {
+  body::before,
+  body::after {
+    width: 70vw;
+    height: 70vw;
+    filter: blur(65px);
+    opacity: .10;
+  }
+
+  .glass-panel:hover,
+  .stat-card:hover,
+  .dashboard-card:hover,
+  .card:hover,
+  .panel:hover,
+  .feature-card:hover,
+  .trade-card:hover,
+  .metric-card:hover {
+    transform: none;
+  }
+}
+
+@keyframes kdRiseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kdAmbientDrift {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+  100% { transform: translate3d(3%, 4%, 0) scale(1.08); }
+}
+
+@keyframes kdSheen {
+  0% { background-position: 120% 0; }
+  100% { background-position: -30% 0; }
+}
+
+@keyframes kdOnlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(67,198,160,0); }
+  50% { box-shadow: 0 0 0 5px rgba(67,198,160,.10); }
+}
+
+@keyframes kdCoachGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(124,92,252,0); }
+  50% { box-shadow: 0 8px 34px rgba(124,92,252,.07); }
+}

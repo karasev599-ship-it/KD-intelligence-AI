@@ -1,0 +1,92 @@
+/* ============================================================
+   KriptoDanik AI — Premium Motion Layer
+   Visual polish only: no business logic changes.
+   ============================================================ */
+
+:root{
+  --kd-neon:#9b4dff;
+  --kd-neon-2:#d15cff;
+  --kd-gold:#ffd369;
+  --kd-glow:rgba(155,77,255,.28);
+}
+
+body{background:
+  radial-gradient(circle at 78% 8%,rgba(111,35,180,.13),transparent 28%),
+  radial-gradient(circle at 48% 62%,rgba(74,20,128,.09),transparent 34%),
+  #08080d!important;
+}
+
+.main{position:relative;isolation:isolate;}
+.main:before{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:-1;background:
+  radial-gradient(circle at 65% 18%,rgba(139,43,226,.08),transparent 23%),
+  radial-gradient(circle at 30% 85%,rgba(89,32,160,.06),transparent 26%);
+  animation:kdAmbient 12s ease-in-out infinite alternate;
+}
+
+@keyframes kdAmbient{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1.5%,1%,0) scale(1.035)}}
+
+.brand-hero{
+  min-height:350px!important;
+  border-color:rgba(168,85,247,.34)!important;
+  background:
+    radial-gradient(circle at 70% 55%,rgba(137,43,226,.22),transparent 30%),
+    linear-gradient(110deg,rgba(7,4,15,.99),rgba(18,6,30,.94))!important;
+  box-shadow:0 0 55px rgba(105,0,220,.15),inset 0 0 90px rgba(138,43,226,.075)!important;
+}
+
+.brand-hero:after{content:"";position:absolute;inset:-2px;z-index:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,rgba(193,93,255,.14) 45%,transparent 65%);background-size:220% 100%;animation:kdSweep 7s ease-in-out infinite;mix-blend-mode:screen;}
+@keyframes kdSweep{0%,35%{background-position:180% 0}65%,100%{background-position:-20% 0}}
+
+.brand-hero-copy{padding-top:46px!important;}
+.brand-eyebrow{color:#d5b9ff!important;text-shadow:0 0 14px rgba(168,85,247,.3);}
+.brand-hero h1 span{background:linear-gradient(90deg,#a855f7,#d05cff,#8a5cff);background-size:180% auto;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:kdTextFlow 5s ease-in-out infinite alternate;text-shadow:none!important;}
+@keyframes kdTextFlow{from{background-position:0% 50%}to{background-position:100% 50%}}
+
+.brand-hero-art{width:59%!important;transform-origin:center bottom;animation:kdHeroFloat 5.5s ease-in-out infinite;}
+.brand-hero-art img{content:url('/assets/laptop-character.png');filter:drop-shadow(0 0 24px rgba(138,43,226,.32)) drop-shadow(0 0 55px rgba(168,85,247,.13));transform:scale(1.035);transition:transform .5s ease,filter .5s ease;}
+.brand-hero:hover .brand-hero-art img{transform:scale(1.06) translateY(-2px);filter:drop-shadow(0 0 32px rgba(168,85,247,.45)) drop-shadow(0 0 70px rgba(168,85,247,.16));}
+@keyframes kdHeroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+.brand-quote{color:#d28bff!important;text-shadow:0 0 18px rgba(194,124,255,.25);animation:kdQuote 4s ease-in-out infinite alternate;}
+@keyframes kdQuote{from{opacity:.72;transform:rotate(-3deg) translateY(1px)}to{opacity:1;transform:rotate(-3deg) translateY(-4px)}}
+
+.brand-pills span{transition:transform .25s ease,border-color .25s ease,background .25s ease,box-shadow .25s ease;}
+.brand-pills span:hover{transform:translateY(-2px);border-color:rgba(168,85,247,.42);background:rgba(128,49,207,.25);box-shadow:0 8px 22px rgba(92,25,145,.18);}
+
+.brand-cta{position:relative;overflow:hidden;isolation:isolate;transition:transform .25s ease,box-shadow .25s ease!important;}
+.brand-cta:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);animation:kdButtonSweep 4.5s ease-in-out infinite;}
+.brand-cta:hover{transform:translateY(-3px) scale(1.015)!important;box-shadow:0 10px 32px rgba(216,163,26,.28),0 0 30px rgba(168,85,247,.12)!important;}
+@keyframes kdButtonSweep{0%,55%{transform:translateX(-120%)}75%,100%{transform:translateX(120%)}}
+
+.brand-progress,.brand-coach,.brand-kpi,.brand-showcase-grid .glass-panel,.brand-bottom-grid .glass-panel{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;}
+.brand-progress:hover,.brand-coach:hover,.brand-kpi:hover,.brand-showcase-grid .glass-panel:hover,.brand-bottom-grid .glass-panel:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.32)!important;box-shadow:0 14px 35px rgba(20,0,40,.25),0 0 22px rgba(138,43,226,.07);}
+
+.brand-progress .progress-track{box-shadow:0 0 12px rgba(138,43,226,.08);}
+.brand-progress .progress-track i{background:linear-gradient(90deg,#7629d5,#c05cff,#8a5cff)!important;background-size:200% 100%;animation:kdProgress 3.5s ease-in-out infinite alternate;}
+@keyframes kdProgress{from{background-position:0 50%}to{background-position:100% 50%}}
+
+.nav-item{position:relative;overflow:hidden;}
+.nav-item:after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#a855f7,transparent);transform:scaleX(0);transition:transform .25s ease;}
+.nav-item:hover:after,.nav-item.active:after{transform:scaleX(1);}
+
+.brand-kpi{position:relative;overflow:hidden;}
+.brand-kpi:after{content:"";position:absolute;inset:auto -30% -80% auto;width:130px;height:130px;background:radial-gradient(circle,rgba(168,85,247,.12),transparent 68%);pointer-events:none;}
+.brand-kpi b{transition:transform .25s ease;}
+.brand-kpi:hover b{transform:translateX(2px);}
+
+.brand-chart-wrap canvas,.chart-container canvas{filter:drop-shadow(0 0 5px rgba(168,85,247,.16));}
+
+.glass-panel{background-image:linear-gradient(115deg,rgba(255,255,255,.012),transparent 35%,rgba(168,85,247,.018) 65%,transparent)!important;}
+
+@media(max-width:1100px){
+  .brand-hero-art{width:54%!important;}
+}
+@media(max-width:700px){
+  .brand-hero-art{width:105%!important;right:-24%!important;opacity:.54!important;animation:none;}
+  .brand-hero{min-height:450px!important;}
+  .brand-hero-copy{padding-top:30px!important;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}
+}
