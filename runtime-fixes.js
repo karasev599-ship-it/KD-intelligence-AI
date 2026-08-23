@@ -1,8 +1,15 @@
-/* KriptoDanik AI — runtime fixes v1.12.1 */
+/* KriptoDanik AI — runtime fixes v1.12.2 */
 (function () {
   'use strict';
 
+  /* App is declared with a top-level const in app.js, so it is available to
+     later classic scripts through the global lexical environment but is NOT
+     exposed as window.App. The old watchdog only checked window.App and was
+     therefore silently disabled. */
   function getApp() {
+    try {
+      if (typeof App !== 'undefined') return App;
+    } catch (_) {}
     return window.App || null;
   }
 
@@ -15,27 +22,22 @@
     return { messages, input };
   }
 
-  /*
-   * v1.12.1 — interaction watchdog.
-   *
-   * The application is a static SPA and several full-screen UI layers share
-   * the .onboarding-overlay class (wizard/lightbox). A stale/invisible layer
-   * must never remain hit-testable above the app: it makes every button look
-   * "dead" while the page itself continues rendering normally.
-   */
+  /* A hidden full-screen layer must never remain hit-testable. */
   function releaseStaleInteractionLayers() {
     const layers = document.querySelectorAll(
-      '.onboarding-overlay, .coach-tour-overlay, .mobile-nav-scrim, #kdAuthOverlay'
+      '.onboarding-overlay, .coach-tour-overlay, .mobile-nav-scrim, #kdAuthOverlay, #screenshotLightbox'
     );
 
     layers.forEach(layer => {
-      const active = layer.classList.contains('active');
-      const hiddenAttr = layer.hidden || layer.getAttribute('aria-hidden') === 'true';
       const computed = window.getComputedStyle(layer);
-      const visiblyHidden = computed.display === 'none' || computed.visibility === 'hidden' || computed.opacity === '0';
+      const hiddenAttr = layer.hidden || layer.getAttribute('aria-hidden') === 'true';
+      const visuallyHidden = computed.display === 'none' || computed.visibility === 'hidden' || computed.opacity === '0';
 
-      if (!active && (hiddenAttr || visiblyHidden || layer.id === 'screenshotLightbox')) {
+      /* Hidden wins over an accidentally stale .active class. */
+      if (hiddenAttr || visuallyHidden) {
         layer.style.pointerEvents = 'none';
+      } else {
+        layer.style.pointerEvents = '';
       }
     });
   }
@@ -169,9 +171,9 @@
   }
 
   function run() {
-    const app = getApp();
     releaseStaleInteractionLayers();
     ensureNavigationWorks();
+    const app = getApp();
     if (!app) return;
     patchCoachDom();
     fixDashboardBalance();
