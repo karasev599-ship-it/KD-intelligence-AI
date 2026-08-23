@@ -52,7 +52,7 @@
 
     // Defensive recovery: if the SPA rendered but its main JS or click bindings
     // did not start, recover them from the same directory.
-    loadScript('interaction-recovery.js?v=1.12.3', 'kdInteractionRecoveryLoaded');
+    loadScript('interaction-recovery.js?v=1.12.4', 'kdInteractionRecoveryLoaded');
   }
 
   if (document.readyState === 'loading') {
