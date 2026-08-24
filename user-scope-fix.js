@@ -27,19 +27,31 @@
     return key;
   }
 
+  function rawGet(key) {
+    try {
+      const original = Storage.prototype.__kdOriginalGetItem || Storage.prototype.getItem;
+      return original.call(localStorage, key);
+    } catch (_) { return null; }
+  }
+
+  function rawSet(key, value) {
+    try {
+      const original = Storage.prototype.__kdOriginalSetItem || Storage.prototype.setItem;
+      original.call(localStorage, key, value);
+    } catch (_) {}
+  }
+
   function migrateLegacy(scope) {
     if (scope === 'guest') return;
     const target = keyFor(scope);
     try {
-      if (Storage.prototype.getItem.call(localStorage, target)) return;
-      const legacy = Storage.prototype.getItem.call(localStorage, LEGACY_KEY);
+      if (rawGet(target)) return;
+      const legacy = rawGet(LEGACY_KEY);
       if (!legacy) return;
       const parsed = JSON.parse(legacy);
       const identity = String(parsed?.userData?.name || '').trim().toLowerCase();
       const currentName = (document.getElementById('kdAccountName')?.textContent || '').trim().toLowerCase();
-      if (identity && currentName && identity === currentName) {
-        Storage.prototype.setItem.call(localStorage, target, legacy);
-      }
+      if (identity && currentName && identity === currentName) rawSet(target, legacy);
     } catch (_) {}
   }
 
@@ -54,15 +66,9 @@
       Object.defineProperty(proto, '__kdOriginalGetItem', { value: originalGet, configurable: true });
       Object.defineProperty(proto, '__kdOriginalSetItem', { value: originalSet, configurable: true });
       Object.defineProperty(proto, '__kdOriginalRemoveItem', { value: originalRemove, configurable: true });
-      proto.getItem = function (key) {
-        return originalGet.call(this, scopedKey(key));
-      };
-      proto.setItem = function (key, value) {
-        return originalSet.call(this, scopedKey(key), value);
-      };
-      proto.removeItem = function (key) {
-        return originalRemove.call(this, scopedKey(key));
-      };
+      proto.getItem = function (key) { return originalGet.call(this, scopedKey(key)); };
+      proto.setItem = function (key, value) { return originalSet.call(this, scopedKey(key), value); };
+      proto.removeItem = function (key) { return originalRemove.call(this, scopedKey(key)); };
       storagePatched = true;
       return true;
     } catch (error) {
@@ -77,13 +83,8 @@
     if (!A.__kdUserScopePatched) {
       const originalLoad = A.loadState.bind(A);
       const originalSave = A.saveState.bind(A);
-      A.loadState = function () {
-        migrateLegacy(activeScope || userIdentity());
-        return originalLoad();
-      };
-      A.saveState = function () {
-        return originalSave();
-      };
+      A.loadState = function () { migrateLegacy(activeScope || userIdentity()); return originalLoad(); };
+      A.saveState = function () { return originalSave(); };
       A.__kdUserScopePatched = true;
     }
     return true;
@@ -104,8 +105,9 @@
       A.renderDashboard?.();
       A.renderJournal?.();
       A.updateBadges?.();
-      const storedMode = Storage.prototype.getItem.call(localStorage, `${PREFIX}market:${encodeURIComponent(scope)}`);
-      if (storedMode && (storedMode === 'crypto' || storedMode === 'forex')) {
+      const modeKey = `${PREFIX}market:${encodeURIComponent(scope)}`;
+      const storedMode = rawGet(modeKey);
+      if (storedMode === 'crypto' || storedMode === 'forex') {
         A.marketMode = storedMode;
         A.renderMarketMode?.();
       }
