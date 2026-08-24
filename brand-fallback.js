@@ -34,6 +34,7 @@
       }
     });
     loadScript('interaction-recovery.js?v=1.12.5', 'kdInteractionRecoveryLoaded');
+    loadScript('kd-intelligence-ui.js?v=1.0.0', 'kdIntelligenceUiLoaded');
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadOptionalFeatures, { once: true });
   else loadOptionalFeatures();
