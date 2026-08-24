@@ -3,10 +3,11 @@
   'use strict';
 
   const LEGACY_KEY = 'kriptodanik_state';
+  const MARKET_MODE_KEY = 'kd_market_mode';
   const PREFIX = 'kd_state_v2:';
-  let patched = false;
   let activeScope = null;
   let switching = false;
+  let storagePatched = false;
 
   function app() {
     try { return typeof App !== 'undefined' ? App : window.App || null; } catch (_) { return window.App || null; }
@@ -19,75 +20,82 @@
     return 'guest';
   }
 
-  function keyFor(scope) {
-    return PREFIX + encodeURIComponent(scope);
-  }
-
-  function readRaw(scope) {
-    try { return localStorage.getItem(keyFor(scope)); } catch (_) { return null; }
+  function keyFor(scope) { return PREFIX + encodeURIComponent(scope); }
+  function scopedKey(key, scope = activeScope || userIdentity()) {
+    if (key === LEGACY_KEY) return keyFor(scope);
+    if (key === MARKET_MODE_KEY) return `${PREFIX}market:${encodeURIComponent(scope)}`;
+    return key;
   }
 
   function migrateLegacy(scope) {
-    if (scope === 'guest' || readRaw(scope)) return;
+    if (scope === 'guest') return;
+    const target = keyFor(scope);
     try {
-      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (Storage.prototype.getItem.call(localStorage, target)) return;
+      const legacy = Storage.prototype.getItem.call(localStorage, LEGACY_KEY);
       if (!legacy) return;
       const parsed = JSON.parse(legacy);
       const identity = String(parsed?.userData?.name || '').trim().toLowerCase();
       const currentName = (document.getElementById('kdAccountName')?.textContent || '').trim().toLowerCase();
-      if (identity && currentName && identity === currentName) localStorage.setItem(keyFor(scope), legacy);
+      if (identity && currentName && identity === currentName) {
+        Storage.prototype.setItem.call(localStorage, target, legacy);
+      }
     } catch (_) {}
   }
 
-  function patchStorageMethods() {
+  function patchStorage() {
+    if (storagePatched || !Storage?.prototype) return true;
+    const proto = Storage.prototype;
+    const originalGet = proto.getItem;
+    const originalSet = proto.setItem;
+    const originalRemove = proto.removeItem;
+
+    try {
+      Object.defineProperty(proto, '__kdOriginalGetItem', { value: originalGet, configurable: true });
+      Object.defineProperty(proto, '__kdOriginalSetItem', { value: originalSet, configurable: true });
+      Object.defineProperty(proto, '__kdOriginalRemoveItem', { value: originalRemove, configurable: true });
+      proto.getItem = function (key) {
+        return originalGet.call(this, scopedKey(key));
+      };
+      proto.setItem = function (key, value) {
+        return originalSet.call(this, scopedKey(key), value);
+      };
+      proto.removeItem = function (key) {
+        return originalRemove.call(this, scopedKey(key));
+      };
+      storagePatched = true;
+      return true;
+    } catch (error) {
+      console.warn('KD user-scope storage patch unavailable:', error);
+      return false;
+    }
+  }
+
+  function patchApp() {
     const A = app();
-    if (!A || patched) return false;
-
-    const originalLoad = typeof A.loadState === 'function' ? A.loadState.bind(A) : null;
-    const originalSave = typeof A.saveState === 'function' ? A.saveState.bind(A) : null;
-    if (!originalLoad || !originalSave) return false;
-
-    A.loadState = function () {
-      const scope = activeScope || userIdentity();
-      migrateLegacy(scope);
-      const scoped = readRaw(scope);
-      const originalGet = localStorage.getItem.bind(localStorage);
-      try {
-        localStorage.getItem = function (key) {
-          if (key === LEGACY_KEY) return scoped;
-          return originalGet(key);
-        };
+    if (!A || typeof A.loadState !== 'function' || typeof A.saveState !== 'function') return false;
+    if (!A.__kdUserScopePatched) {
+      const originalLoad = A.loadState.bind(A);
+      const originalSave = A.saveState.bind(A);
+      A.loadState = function () {
+        migrateLegacy(activeScope || userIdentity());
         return originalLoad();
-      } finally {
-        localStorage.getItem = originalGet;
-      }
-    };
-
-    A.saveState = function () {
-      const scope = activeScope || userIdentity();
-      const scopedKey = keyFor(scope);
-      const originalSet = localStorage.setItem.bind(localStorage);
-      try {
-        localStorage.setItem = function (key, value) {
-          if (key === LEGACY_KEY) return originalSet(scopedKey, value);
-          return originalSet(key, value);
-        };
+      };
+      A.saveState = function () {
         return originalSave();
-      } finally {
-        localStorage.setItem = originalSet;
-      }
-    };
-
-    patched = true;
+      };
+      A.__kdUserScopePatched = true;
+    }
     return true;
   }
 
   function refreshForScope(scope) {
     const A = app();
-    if (!A || !patched || switching || scope === activeScope) return;
+    if (!A || !storagePatched || switching || scope === activeScope) return;
     switching = true;
     try {
       activeScope = scope;
+      migrateLegacy(scope);
       A.loadState();
       A.applyUserData?.();
       A.updateBalanceDisplay?.();
@@ -96,6 +104,11 @@
       A.renderDashboard?.();
       A.renderJournal?.();
       A.updateBadges?.();
+      const storedMode = Storage.prototype.getItem.call(localStorage, `${PREFIX}market:${encodeURIComponent(scope)}`);
+      if (storedMode && (storedMode === 'crypto' || storedMode === 'forex')) {
+        A.marketMode = storedMode;
+        A.renderMarketMode?.();
+      }
     } catch (error) {
       console.warn('KD user-scope refresh:', error);
     } finally {
@@ -104,7 +117,7 @@
   }
 
   function start() {
-    if (!patchStorageMethods()) return false;
+    if (!patchStorage() || !patchApp()) return false;
     refreshForScope(userIdentity());
 
     const accountName = document.getElementById('kdAccountName');
