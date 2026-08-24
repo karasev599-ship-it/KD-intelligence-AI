@@ -4779,3 +4779,137 @@ document.addEventListener('click', (event) => {
   document.addEventListener('DOMContentLoaded',()=>{bindBrand();sync();setTimeout(sync,700);setTimeout(sync,1800);});
   window.addEventListener('load',()=>{bindBrand();sync();});
 })();
+
+
+// ============================================================
+// FIX: Исправление кликабельности кнопок на дашборде
+// ============================================================
+(function fixDashboardInteractions() {
+    // Ждем полной загрузки DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fix);
+    } else {
+        fix();
+    }
+
+    function fix() {
+        console.log('🔧 Применяем фикс для кликабельности...');
+
+        // Функция открытия модального окна
+        function openTradeModalDirect() {
+            console.log('🔓 Открываем модальное окно добавления сделки');
+            
+            const overlay = document.getElementById('tradeModalOverlay');
+            if (!overlay) {
+                console.error('❌ Модальное окно не найдено!');
+                alert('Ошибка: модальное окно не найдено. Проверьте HTML.');
+                return;
+            }
+
+            // Сбрасываем форму
+            const form = document.getElementById('tradeForm');
+            if (form) form.reset();
+            
+            // Устанавливаем дату
+            const dateInput = document.getElementById('tDate');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+            }
+
+            // Открываем модалку
+            overlay.classList.add('active');
+            overlay.style.display = 'flex';
+            
+            // Фокус на первое поле
+            const firstInput = document.getElementById('tAsset');
+            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+            
+            console.log('✅ Модальное окно открыто');
+        }
+
+        // 1. Кнопка "Добавить первую сделку" в хедере
+        const addTradeBtn = document.getElementById('addTradeBtn');
+        if (addTradeBtn) {
+            const newBtn = addTradeBtn.cloneNode(true);
+            addTradeBtn.parentNode.replaceChild(newBtn, addTradeBtn);
+            
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик по "Добавить сделку"');
+                openTradeModalDirect();
+            });
+        }
+
+        // 2. Кнопка "Добавить первую сделку" в хедере (альтернативная)
+        const addTradeBtn2 = document.getElementById('addTradeBtn2');
+        if (addTradeBtn2) {
+            const newBtn2 = addTradeBtn2.cloneNode(true);
+            addTradeBtn2.parentNode.replaceChild(newBtn2, addTradeBtn2);
+            
+            newBtn2.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик по "Добавить сделку" (альт)');
+                openTradeModalDirect();
+            });
+        }
+
+        // 3. Кнопка "Добавить первую сделку" в дашборде (brandFirstTradeBtn)
+        const brandBtn = document.getElementById('brandFirstTradeBtn');
+        if (brandBtn) {
+            const newBrandBtn = brandBtn.cloneNode(true);
+            brandBtn.parentNode.replaceChild(newBrandBtn, brandBtn);
+            
+            newBrandBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик по "Добавить первую сделку" (бренд)');
+                openTradeModalDirect();
+            });
+        }
+
+        // 4. Кнопка "Добавить сделку" в быстрых действиях
+        const qaAddTrade = document.getElementById('qaAddTrade');
+        if (qaAddTrade) {
+            const newQa = qaAddTrade.cloneNode(true);
+            qaAddTrade.parentNode.replaceChild(newQa, qaAddTrade);
+            
+            newQa.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик по "Добавить сделку" (быстрые действия)');
+                openTradeModalDirect();
+            });
+        }
+
+        // 5. Кнопка "Добавить первую сделку" в пустом состоянии
+        const welcomeBtn = document.getElementById('dashWelcomeAddTradeBtn');
+        if (welcomeBtn) {
+            const newWelcome = welcomeBtn.cloneNode(true);
+            welcomeBtn.parentNode.replaceChild(newWelcome, welcomeBtn);
+            
+            newWelcome.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик по "Добавить первую сделку" (велком)');
+                openTradeModalDirect();
+            });
+        }
+
+        // 6. Делегирование для всех кнопок с классом .add-trade-trigger
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.add-trade-trigger');
+            if (target) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ Клик через делегирование (.add-trade-trigger)');
+                openTradeModalDirect();
+            }
+        });
+
+        console.log('✅ Фикс кликабельности применен');
+    }
+
+})();
