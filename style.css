@@ -7,3 +7,43 @@
 .kd-auth-overlay:not([hidden]) { pointer-events: auto !important; }
 .onboarding-overlay.active { pointer-events: auto !important; }
 .coach-tour-overlay.active { pointer-events: auto !important; }
+/* ============================================================
+   FIX: Кликабельность кнопок
+   ============================================================ */
+#addTradeBtn,
+#addTradeBtn2,
+#brandFirstTradeBtn,
+#qaAddTrade,
+#dashWelcomeAddTradeBtn,
+.brand-cta,
+.btn-primary,
+.btn-secondary,
+.data-action-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 100 !important;
+    position: relative !important;
+}
+
+/* Убеждаемся, что модальное окно правильно отображается */
+#tradeModalOverlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+#tradeModalOverlay.active {
+    display: flex !important;
+}
+
+/* Кнопки в модалке */
+#tradeModalSave,
+#tradeModalCancel {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
