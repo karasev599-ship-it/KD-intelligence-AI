@@ -170,6 +170,140 @@
     });
   }
 
+  function patchForexMarketPulse() {
+    const app = getApp();
+    if (!app || app.__kdForexMarketFix) return;
+    if (typeof app.loadMarketPulse !== 'function') return;
+    app.__kdForexMarketFix = true;
+
+    const originalLoadMarketPulse = app.loadMarketPulse.bind(app);
+
+    app.renderMarketMode = (function (original) {
+      return function () {
+        original.call(this);
+        if (this.marketMode !== 'forex') return;
+        if (this.marketContextTitle) this.marketContextTitle.textContent = 'Форекс';
+        if (this.marketSourceLabel) this.marketSourceLabel.textContent = 'ECB reference rates + Gold API';
+        if (this.marketStrategyContext) this.marketStrategyContext.textContent = 'Отслеживаем EUR/USD, GBP/USD и XAU/USD: валютные курсы и спот золота для собственного анализа. Никаких торговых сигналов.';
+        if (this.marketStrategyTags) {
+          this.marketStrategyTags.innerHTML = ['EUR/USD', 'GBP/USD', 'XAU/USD', 'ECB / rates']
+            .map(t => `<span>${this.escapeHtml(t)}</span>`).join('');
+        }
+      };
+    })(app.renderMarketMode);
+
+    app.loadMarketPulse = async function (silent = false) {
+      if (this.marketMode !== 'forex') return originalLoadMarketPulse(silent);
+      if (!this.marketPulseGrid) return;
+
+      this.renderMarketSession();
+      this.renderMarketMode();
+      if (!silent) this.renderMarketPulseLoading();
+      const started = performance.now();
+
+      try {
+        const nowDate = new Date();
+        const previousDate = new Date(nowDate);
+        previousDate.setUTCDate(previousDate.getUTCDate() - 3);
+        const fmt = d => d.toISOString().slice(0, 10);
+
+        const [latestFxResponse, previousFxResponse, goldResponse] = await Promise.all([
+          fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP', { cache: 'no-store' }),
+          fetch(`https://api.frankfurter.app/${fmt(previousDate)}?from=USD&to=EUR,GBP`, { cache: 'no-store' }),
+          fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' })
+        ]);
+
+        if (!latestFxResponse.ok || !previousFxResponse.ok || !goldResponse.ok) {
+          throw new Error('Forex market data source unavailable');
+        }
+
+        const latestFx = await latestFxResponse.json();
+        const previousFx = await previousFxResponse.json();
+        const gold = await goldResponse.json();
+
+        const fxRows = ['EUR', 'GBP'].map(code => {
+          const usdPerUnit = Number(latestFx?.rates?.[code]);
+          const previousUsdPerUnit = Number(previousFx?.rates?.[code]);
+          if (!Number.isFinite(usdPerUnit) || usdPerUnit <= 0) throw new Error(`Missing ${code} rate`);
+          const last = 1 / usdPerUnit;
+          const previous = Number.isFinite(previousUsdPerUnit) && previousUsdPerUnit > 0 ? 1 / previousUsdPerUnit : null;
+          const pct = previous ? ((last - previous) / previous) * 100 : null;
+          return {
+            symbol: `${code}USD`,
+            label: `${code}/USD`,
+            name: code,
+            lastPrice: last,
+            priceChangePercent: pct,
+            previousPrice: previous,
+            highPrice: null,
+            lowPrice: null,
+            quoteVolume: null,
+            source: 'Frankfurter / ECB'
+          };
+        });
+
+        const goldPrice = Number(gold?.price);
+        if (!Number.isFinite(goldPrice) || goldPrice <= 0) throw new Error('Missing XAU price');
+        fxRows.push({
+          symbol: 'XAUUSD',
+          label: 'XAU/USD',
+          name: 'XAU',
+          lastPrice: goldPrice,
+          priceChangePercent: null,
+          previousPrice: null,
+          highPrice: null,
+          lowPrice: null,
+          quoteVolume: null,
+          source: 'Gold API'
+        });
+
+        const now = new Date();
+        const latency = Math.round(performance.now() - started);
+        this.marketPulseGrid.innerHTML = fxRows.map(row => {
+          const pct = this.marketNum(row.priceChangePercent);
+          const isGold = row.symbol === 'XAUUSD';
+          const decimals = isGold ? 2 : 5;
+          const price = row.lastPrice.toFixed(decimals);
+          const change = pct === null ? '—' : this.marketFmtPct(pct);
+          const changeClass = pct === null ? '' : (pct >= 0 ? 'positive' : 'negative');
+          const previous = row.previousPrice === null ? '—' : row.previousPrice.toFixed(decimals);
+          return `<article class="pulse-card glass-panel">
+            <div class="pulse-top"><span>${this.escapeHtml(row.label)}</span><em class="${changeClass}">${change}</em></div>
+            <strong>${isGold ? '$' + Number(price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : price}</strong>
+            <div class="pulse-range" title="${isGold ? 'Спот XAU/USD' : 'Курс относительно USD'}"><i style="width:50%"></i></div>
+            <div class="pulse-range-labels"><span>${isGold ? 'XAU' : row.name}</span><span>LIVE</span><span>USD</span></div>
+            <div class="pulse-row"><span>${isGold ? 'Спот' : 'Курс'}</span><b>${isGold ? 'XAU / USD' : row.label}</b></div>
+            <div class="pulse-row"><span>Предыдущий</span><b>${previous}</b></div>
+            <div class="pulse-row"><span>Источник</span><b>${this.escapeHtml(row.source)}</b></div>
+          </article>`;
+        }).join('') + `<div class="pulse-source glass-panel">Frankfurter / ECB + Gold API · ${now.toLocaleTimeString()} · ${latency} ms · режим: Форекс.</div>`;
+
+        if (this.marketLiveStatus) this.marketLiveStatus.textContent = 'Данные актуальны';
+        if (this.marketLastUpdated) this.marketLastUpdated.textContent = now.toLocaleTimeString();
+        if (this.marketLatency) this.marketLatency.textContent = latency + ' ms';
+
+        const analysis = document.getElementById('marketAiAnalysis');
+        if (analysis) {
+          analysis.innerHTML = `<div class="analysis-list">
+            <div><b>Рынок</b><p>Форекс · EUR/USD, GBP/USD и XAU/USD · данные получены сейчас.</p></div>
+            <div><b>Курсы</b><p>EUR/USD и GBP/USD — справочные курсы ECB через Frankfurter. XAU/USD — текущий спот золота.</p></div>
+            <div><b>Источник</b><p>Данные предназначены для собственного анализа и не являются торговым сигналом.</p></div>
+          </div>`;
+        }
+
+        await Promise.all([this.loadMarketCalendar(), this.loadMarketNews()]);
+      } catch (error) {
+        console.error('Forex Market Pulse fix:', error);
+        if (this.marketPulseGrid) {
+          this.marketPulseGrid.innerHTML = '<div class="module-empty glass-panel"><div class="module-empty-icon">⌁</div><h3>Форекс недоступен</h3><p>Не удалось получить EUR/USD, GBP/USD и XAU/USD. Никаких выдуманных значений не показываем.</p><button class="btn-primary" onclick="App.loadMarketPulse()">Повторить</button></div>';
+        }
+        if (this.marketLiveStatus) this.marketLiveStatus.textContent = 'Нет соединения';
+        if (this.marketLatency) this.marketLatency.textContent = '—';
+        await Promise.all([this.loadMarketCalendar(), this.loadMarketNews()]);
+      }
+    };
+  }
+
   function run() {
     releaseStaleInteractionLayers();
     ensureNavigationWorks();
@@ -178,6 +312,7 @@
     patchCoachDom();
     fixDashboardBalance();
     loadEconomicCalendarFix();
+    patchForexMarketPulse();
     if (typeof window.KDRefreshBrandDashboard === 'function') {
       try { window.KDRefreshBrandDashboard(); } catch (_) {}
     }
