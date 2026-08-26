@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta name="application-version" content="1.12.0">
+    <meta name="application-version" content="1.22.0">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="KriptoDanik AI">
-    <meta property="og:description" content="KriptoDanik AI — твой AI-помощник по криптовалюте и трейдингу.">
-    <meta property="og:image" content="/assets/og-image.png?v=2">
-    <meta property="og:image:alt" content="KriptoDanik AI">
+    <meta property="og:title" content="KD Intelligence AI">
+    <meta property="og:description" content="KD Intelligence AI — твой AI-помощник по криптовалюте и трейдингу.">
+    <meta property="og:image:alt" content="KD Intelligence AI">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="KriptoDanik AI">
-    <meta name="twitter:description" content="AI-помощник по криптовалюте и трейдингу.">
-    <meta name="twitter:image" content="/assets/og-image.png?v=2">
+    <meta name="twitter:title" content="KD Intelligence AI">
+    <meta name="twitter:description" content="KD Intelligence AI — рабочее пространство для трейдинга.">
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KriptoDanik AI</title>
+    <title>KD Intelligence AI</title>
     <meta name="theme-color" content="#0A0A0F">
-    <meta name="description" content="KriptoDanik AI — аналитика, журнал сделок, дисциплина и AI-коуч.">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+    <meta name="description" content="KD Intelligence AI — аналитика, журнал сделок, дисциплина и AI Coach.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="style.css?v=1.12.0" />
+    <link rel="stylesheet" href="style.css?v=1.22.0" />
 
     <!-- Pinned to an exact Chart.js release (was the unpinned "/npm/chart.js" alias,
          which resolves to whatever build is "latest" at request time — that drift is
@@ -33,7 +28,6 @@
          sourceMappingURL pointed at a chart.umd.min.js.map that didn't match, producing
          a 404 in DevTools. Pinning fixes the mismatch without changing chart behavior. -->
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-    <script defer src="brand-fallback.js?v=1.12.0"></script>
 </head>
 <body>
 
@@ -48,7 +42,7 @@
                 <div class="logo">
                     <div class="logo-icon">KD</div>
                     <div>
-                        <h2 id="appName">KriptoDanik</h2>
+                        <h2 id="appName">KD Intelligence</h2>
                         <span id="appSub">AI</span>
                     </div>
                 </div>
@@ -191,7 +185,7 @@
                     <div class="wizard-progress"><div class="wizard-progress-bar" id="wizardProgressBar"></div></div>
                     <div class="wizard-step-label" id="wizardStepLabel">Шаг 1 из 4</div>
                     <div class="onboarding-header">
-                        <h3 id="wizardStepTitle">Добро пожаловать в KriptoDanik AI</h3>
+                        <h3 id="wizardStepTitle">Добро пожаловать в KD Intelligence AI</h3>
                         <p id="wizardStepSubtitle">Давайте настроим ваш профиль трейдера</p>
                     </div>
                     <div class="onboarding-body wizard-body">
@@ -203,7 +197,7 @@
                         </div>
                         <div class="wizard-step" data-step="2" style="display:none;">
                             <div class="form-row-2">
-                                <div class="form-group"><label>Начальный баланс ($)</label><input type="number" id="onboardingCapital" placeholder="10000" class="form-input" /></div>
+                                <div class="form-group"><label>Начальный баланс ($)</label><input type="number" id="onboardingCapital" placeholder="100000" class="form-input" /></div>
                                 <div class="form-group"><label>Риск на сделку (%)</label><input type="number" id="onboardingRisk" placeholder="1" step="0.5" class="form-input" /></div>
                             </div>
                             <div class="form-row-2">
@@ -247,7 +241,7 @@
                             </div>
                         </div>
                         <div class="wizard-step" data-step="4" style="display:none;">
-                            <p class="wizard-philosophy">KriptoDanik AI не является поставщиком сигналов и не предсказывает рынок. Наша задача — помочь вам соблюдать дисциплину, организовать рабочее пространство и следовать <strong>вашей собственной</strong> торговой стратегии.</p>
+                            <p class="wizard-philosophy">KD Intelligence AI не является поставщиком сигналов и не предсказывает рынок. Наша задача — помочь вам соблюдать дисциплину, организовать рабочее пространство и следовать <strong>вашей собственной</strong> торговой стратегии.</p>
                             <div class="form-group">
                                 <label>Опишите вашу торговую стратегию</label>
                                 <textarea id="onboardingStrategy" class="form-input" rows="5" placeholder="Например: Торгую на London-сессии. Отмечаю H4 максимум/минимум. Жду FVG на M5. Минимальный RR 1:2."></textarea>
@@ -269,9 +263,9 @@
                 <div class="coach-tour-backdrop"></div>
                 <section class="coach-tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
                     <div class="coach-tour-copy">
-                        <div class="coach-tour-brand"><img src="assets/avatar-circle-clean.png" alt="" onerror="this.onerror=null;this.src='assets/avatar-circle.png'"><span>KriptoDanik AI · AI Коуч</span></div>
+                        <div class="coach-tour-brand"><span class="kd-mark">KD</span><span>KD Intelligence AI · AI Коуч</span></div>
                         <div class="coach-tour-step" id="tourStepLabel">1 / 7</div>
-                        <h2 id="tourTitle">Добро пожаловать в KriptoDanik AI</h2>
+                        <h2 id="tourTitle">Добро пожаловать в KD Intelligence AI</h2>
                         <div id="tourBody" class="coach-tour-body"></div>
                         <div class="coach-tour-progress"><i id="tourProgressBar"></i></div>
                         <div class="coach-tour-actions">
@@ -282,7 +276,7 @@
                     </div>
                     <div class="coach-tour-character">
                         <div class="coach-tour-glow"></div>
-                        <img src="assets/hero-character-clean.png" alt="KriptoDanik AI" onerror="this.onerror=null;this.src='assets/hero-character.png'">
+                        <img src="assets/hero-character-clean.png" alt="KD Intelligence AI" onerror="this.onerror=null;this.src='assets/hero-character.png'">
                         <div class="coach-tour-bubble">
                             <span>AI COACH</span>
                             <strong>Я проведу тебя по рабочему пространству и покажу, где находится всё важное.</strong>
@@ -437,8 +431,8 @@
                 <div class="brand-hero-grid">
                     <section class="brand-hero glass-panel">
                         <div class="brand-hero-copy">
-                            <span class="brand-eyebrow">KRIPTODANIK AI • TRADING INTELLIGENCE</span>
-                            <h1>Добро пожаловать в<br><span>KriptoDanik AI</span></h1>
+                            <span class="brand-eyebrow">KD INTELLIGENCE AI • TRADING INTELLIGENCE</span>
+                            <h1>Добро пожаловать в<br><span>KD Intelligence AI</span></h1>
                             <p>Твой AI-проводник в трейдинге.</p>
                             <div class="brand-pills">
                                 <span>◈ Анализируй рынок</span><span>▣ Веди журнал</span>
@@ -446,7 +440,7 @@
                             </div>
                             <button class="brand-cta" id="brandFirstTradeBtn">Добавить первую сделку <b>→</b></button>
                         </div>
-                        <div class="brand-hero-art"><img src="assets/hero-character-clean.png" alt="KriptoDanik AI" onerror="this.onerror=null;this.src='assets/hero-character.png'"></div>
+                        <div class="brand-hero-art" aria-hidden="true"><div class="brand-hero-mark">KD</div></div>
                         <div class="brand-quote">“Trade smarter.<br>Think longer.”</div>
                     </section>
                     <aside class="brand-side-stack">
@@ -458,7 +452,7 @@
                             <div class="discipline-good" id="brandDisciplineGood" hidden>A- <span>Очень хорошо</span></div>
                         </div>
                         <div class="brand-coach glass-panel">
-                            <div class="coach-head"><img src="assets/avatar-circle-clean.png" onerror="this.onerror=null;this.src='assets/avatar-circle.png'"><div><b>KriptoDanik AI</b><small>AI Коуч</small></div></div>
+                            <div class="coach-head"><div class="coach-avatar-mark">KD</div><div><b>KD Intelligence AI</b><small>AI Коуч</small></div></div>
                             <p><b>Привет, <span id="brandCoachName">Трейдер</span>! 🔥</b><br>Как проходит твоя торговая неделя? Хочешь проанализировать последние сделки или разобрать какой-то сетап?</p>
                             <button class="coach-btn" id="brandCoachAnalyze">◉ Проанализируй мои сделки</button>
                             <button class="coach-btn" id="brandCoachSetup">♢ Можем разобрать сетап?</button>
@@ -475,7 +469,7 @@
                     <div class="brand-kpi streak"><span>Текущий стрик</span><b id="brandStreak">0 дней</b><em id="brandStreakSub">Начните журнал</em></div>
                 </div>
 
-                <div class="brand-motto glass-panel"><span>♕</span><b>«Дисциплина делает из трейдера легенду»</b><small>— KriptoDanik AI</small></div>
+                <div class="brand-motto glass-panel"><span>♕</span><b>«Дисциплина делает из трейдера легенду»</b><small>— KD Intelligence AI</small></div>
 
                 <!-- v1.1.3 — BRAND-FIRST DASHBOARD -->
                 <div class="brand-showcase-grid">
@@ -573,7 +567,7 @@
                 Shown only when there are zero trades; hidden otherwise.
                 ============================================================ -->
                 <div class="dash-panel glass-panel" id="dashWelcomeHero" style="display:none; text-align:center; padding:32px 20px; margin-bottom:20px;">
-                    <h2 data-key="dash_welcome_title" style="margin-bottom:6px;">Welcome to KriptoDanik AI</h2>
+                    <h2 data-key="dash_welcome_title" style="margin-bottom:6px;">Welcome to KD Intelligence AI</h2>
                     <p style="color:var(--text-secondary); margin-bottom:4px;" data-key="dash_welcome_no_data">No trading data yet</p>
                     <p style="color:var(--text-secondary); margin-bottom:16px;" data-key="dash_welcome_cta">Start by recording your first trade.</p>
                     <button class="btn-primary" id="dashWelcomeAddTradeBtn" data-key="add_first_trade">Add your first trade</button>
@@ -952,7 +946,7 @@
             ============================================================ -->
             <div id="section-intelligence" class="section-content">
                 <div class="ai-workspace glass-panel">
-                    <div class="ai-disclaimer-bar" data-key="ai_disclaimer">KriptoDanik AI не является финансовым советником, не даёт торговых сигналов и не предсказывает направление рынка. Он помогает вам соблюдать собственную торговую стратегию, правила и дисциплину.</div>
+                    <div class="ai-disclaimer-bar" data-key="ai_disclaimer">KD Intelligence AI не является финансовым советником, не даёт торговых сигналов и не предсказывает направление рынка. Он помогает вам соблюдать собственную торговую стратегию, правила и дисциплину.</div>
                     <div class="ai-chat-area" id="aiChatArea">
                         <div class="ai-messages" id="aiMessages"></div>
                     </div>
@@ -1005,6 +999,29 @@
                                     <span id="guardianStreak">0 дней</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="guardian-risk-grid" id="guardianRiskGrid">
+                        <div class="guardian-risk-card glass-panel">
+                            <span class="guardian-risk-label">Риск на сделку</span>
+                            <strong id="guardianRiskValue">—</strong>
+                            <small id="guardianRiskMeta">Нет данных</small>
+                        </div>
+                        <div class="guardian-risk-card glass-panel">
+                            <span class="guardian-risk-label">Дневной drawdown</span>
+                            <strong id="guardianDrawdownValue">—</strong>
+                            <small id="guardianDrawdownMeta">Нет данных</small>
+                        </div>
+                        <div class="guardian-risk-card glass-panel">
+                            <span class="guardian-risk-label">Сделок сегодня</span>
+                            <strong id="guardianTradesTodayValue">—</strong>
+                            <small id="guardianTradesTodayMeta">Лимит 5</small>
+                        </div>
+                        <div class="guardian-risk-card glass-panel">
+                            <span class="guardian-risk-label">Нарушения</span>
+                            <strong id="guardianViolationsValue">—</strong>
+                            <small id="guardianViolationsMeta">Нет активных</small>
                         </div>
                     </div>
 
@@ -1240,6 +1257,8 @@
                                     </div>
                                     <div class="form-group"><label>Максимальный дневной убыток ($)</label><input type="number" id="settingsDailyLoss" class="form-input" placeholder="500" /></div>
                                     <div class="form-group"><label>Дневная цель ($)</label><input type="number" id="settingsDailyTarget" class="form-input" placeholder="800" /></div>
+                                    <div class="form-group"><label>Максимум сделок в день</label><input type="number" id="settingsMaxTrades" class="form-input" min="1" max="50" step="1" placeholder="5" /></div>
+                                    <div class="form-group"><label>Режим Risk Guard</label><div class="filter-select-wrapper"><select id="settingsRiskMode" class="form-input"><option value="block">Блокировать нарушение</option><option value="warn">Только предупреждать</option></select></div><small style="display:block;margin-top:6px;color:var(--text-secondary);">В режиме предупреждения сделка сохранится, но нарушение попадёт в Guardian.</small></div>
                                     <div class="form-group"><label>Предпочитаемый RR</label>
                                         <div class="filter-select-wrapper"><select id="settingsRR" class="form-input"><option value="1:1">1:1</option><option value="1:2" selected>1:2</option><option value="1:3">1:3</option><option value="1:4">1:4</option></select></div>
                                     </div>
@@ -1308,6 +1327,8 @@
                                     <h4>Импорт</h4>
                                     <div class="data-actions-grid">
                                         <button class="data-action-btn" id="importDataBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Импорт данных (JSON)</button>
+                                        <button class="data-action-btn" id="importCsvBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Импорт сделок (CSV)</button>
+                                        <input type="file" id="importCsvInput" accept=".csv,text/csv" hidden>
                                     </div>
                                 </div>
 
@@ -1324,8 +1345,8 @@
                                     <div class="logo" style="justify-content:center;margin-bottom:20px;">
                                         <div class="logo-icon">KD</div>
                                         <div>
-                                            <h2 style="font-size:24px;">KriptoDanik</h2>
-                                            <span style="font-size:14px;color:var(--text-secondary);">AI v1.8.2</span>
+                                            <h2 style="font-size:24px;">KD Intelligence</h2>
+                                            <span style="font-size:14px;color:var(--text-secondary);">AI v1.29.0</span>
                                         </div>
                                     </div>
                                     <p style="color:var(--text-secondary);margin-bottom:24px;font-size:14px;line-height:1.6;">
@@ -1349,65 +1370,9 @@
     </div>
 
 
-        <!-- ============================================================
-        AUTHENTICATION
-        ============================================================ -->
-        <div id="kdAuthOverlay" class="kd-auth-overlay" hidden aria-hidden="true">
-            <div class="kd-auth-modal" role="dialog" aria-modal="true" aria-labelledby="kdAuthTitle">
-                <button type="button" class="kd-auth-close" id="kdAuthClose" aria-label="Закрыть">×</button>
-                <div class="kd-auth-brand" aria-hidden="true">KD</div>
-                <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9b8cff;font-weight:800;">KriptoDanik AI</div>
-                <h2 id="kdAuthTitle">Регистрация в KriptoDanik AI</h2>
-                <p class="kd-auth-subtitle" id="kdAuthSubtitle">Создай аккаунт, чтобы открыть торговый профиль и получить 21 день полного доступа.</p>
-
-                <div class="kd-auth-tabs" role="tablist" aria-label="Авторизация">
-                    <button type="button" data-auth-tab="login" role="tab" aria-controls="kdLoginForm">Войти</button>
-                    <button type="button" data-auth-tab="signup" role="tab" aria-controls="kdSignupForm" class="active">Регистрация</button>
-                </div>
-
-                <form id="kdLoginForm" class="kd-auth-form" hidden autocomplete="on">
-                    <label>Email
-                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
-                    </label>
-                    <label>Пароль
-                        <input type="password" name="password" autocomplete="current-password" placeholder="Минимум 8 символов" required>
-                    </label>
-                    <button type="submit" class="kd-auth-submit">Войти</button>
-                </form>
-
-                <form id="kdSignupForm" class="kd-auth-form" autocomplete="on">
-                    <label>Никнейм
-                        <input type="text" id="kdSignupUsername" name="username" autocomplete="nickname" minlength="2" maxlength="40" placeholder="Например, KriptoDanik" required>
-                    </label>
-                    <input type="hidden" id="kdSignupName" name="name" value="">
-                    <label>Email
-                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
-                    </label>
-                    <label>Пароль
-                        <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Минимум 8 символов" required>
-                    </label>
-                    <button type="submit" class="kd-auth-submit">Создать аккаунт</button>
-                </form>
-
-                <div id="kdAuthPanel" class="kd-account-panel" hidden>
-                    <div class="kd-plan-card">
-                        <span>Твой аккаунт</span>
-                        <strong id="kdPanelPlan">FREE</strong>
-                        <small id="kdPanelUntil">21 дней полного доступа</small>
-                    </div>
-                    <button type="button" id="kdUpgradeButton" class="kd-pro-button">Перейти на PRO · 4,99 $</button>
-                    <button type="button" id="kdLogoutButton" class="kd-logout-button">Выйти</button>
-                </div>
-
-                <div id="kdAuthError" class="kd-auth-error" role="alert" aria-live="polite"></div>
-            </div>
-        </div>
-
-    <script defer src="chart.js?v=1.12.0"></script>
-    <script defer src="app.js?v=1.12.0"></script>
-    <script defer src="runtime-fixes.js?v=1.12.0"></script>
-    <script defer src="scanner-pro.js?v=1.12.0"></script>
-    <script defer src="auth.js?v=2.2.0"></script>
-    <script defer src="sw-register.js?v=1.12.0"></script>
+    <script defer src="chart.js?v=1.22.0"></script>
+    <script defer src="app.js?v=1.22.0"></script>
+    <script defer src="runtime-fixes.js?v=1.22.0"></script>
+    <script defer src="scanner-pro.js?v=1.22.0"></script>
 </body>
 </html>
