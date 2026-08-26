@@ -28,6 +28,11 @@
          sourceMappingURL pointed at a chart.umd.min.js.map that didn't match, producing
          a 404 in DevTools. Pinning fixes the mismatch without changing chart behavior. -->
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<style id="kd-auth-inline-styles">
+.kd-account-button{width:100%;display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px 11px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.035);color:inherit;text-align:left;cursor:pointer}.kd-account-button:hover{background:rgba(255,255,255,.07)}.kd-account-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#1d1d27;border:1px solid rgba(255,255,255,.12);font-weight:800}.kd-account-copy{min-width:0;display:grid;gap:2px;flex:1}.kd-account-copy b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kd-account-copy small{font-size:9px;letter-spacing:1.2px;color:#9b8cff;font-weight:800}.kd-account-arrow{font-size:22px;color:#777}.kd-auth-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:rgba(4,4,8,.72);backdrop-filter:blur(14px)}.kd-auth-overlay[hidden]{display:none}.kd-auth-modal{position:relative;width:min(460px,100%);padding:30px;border-radius:24px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,#14141d,#0c0c12);box-shadow:0 30px 100px rgba(0,0,0,.55)}.kd-auth-close{position:absolute;right:14px;top:10px;border:0;background:none;color:#aaa;font-size:28px;cursor:pointer}.kd-auth-brand{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,#191924,#30264a);border:1px solid rgba(184,161,255,.35);margin-bottom:18px}.kd-auth-modal h2{margin:6px 0 8px;font-size:28px}.kd-auth-subtitle{margin:0 0 20px;color:#91919f;line-height:1.55;font-size:13px}.kd-auth-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:#0a0a0f;margin-bottom:18px}.kd-auth-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;color:#888;cursor:pointer}.kd-auth-tabs button.active{background:#1b1b25;color:#fff}.kd-auth-form{display:grid;gap:12px}.kd-auth-form[hidden]{display:none}.kd-auth-form label{display:grid;gap:6px;font-size:12px;color:#a8a8b4}.kd-auth-form input{width:100%;box-sizing:border-box;border:1px solid #2a2a36;border-radius:11px;background:#09090e;color:#fff;padding:12px 13px;outline:none}.kd-auth-form input:focus{border-color:#8878ff}.kd-auth-submit,.kd-pro-button,.kd-logout-button{width:100%;border:0;border-radius:11px;padding:12px 14px;cursor:pointer;font-weight:800}.kd-auth-submit{margin-top:5px;background:linear-gradient(135deg,#7865ff,#a38cff);color:#fff}.kd-auth-error{min-height:18px;margin-top:10px;color:#ff8b8b;font-size:12px}.kd-account-panel{display:grid;gap:12px}.kd-account-panel[hidden]{display:none}.kd-plan-card{padding:16px;border:1px solid #292936;border-radius:15px;background:#0b0b11}.kd-plan-card span,.kd-plan-card small{display:block;color:#858595;font-size:11px}.kd-plan-card strong{display:block;font-size:24px;margin:6px 0}.kd-pro-button{background:linear-gradient(135deg,#7865ff,#a38cff);color:#fff}.kd-logout-button{background:#17171f;color:#bbb;border:1px solid #292936}.kd-auth-open{overflow:hidden}
+</style>
+
 </head>
 <body>
 
@@ -1365,6 +1370,70 @@
                 </div>
             </div>
 
+        <!-- ============================================================
+        AUTHENTICATION
+        Real account entry point: registration/login happens before the
+        Trading Profile onboarding wizard.
+        ============================================================ -->
+        <div id="kdAuthOverlay" class="kd-auth-overlay" hidden>
+            <div class="kd-auth-modal" role="dialog" aria-modal="true" aria-labelledby="kdAuthTitle">
+                <button class="kd-auth-close" id="kdAuthClose" type="button" aria-label="Закрыть">×</button>
+                <div class="kd-auth-brand">KD</div>
+                <h2 id="kdAuthTitle">Регистрация в KD Intelligence AI</h2>
+                <p class="kd-auth-subtitle" id="kdAuthSubtitle">Создай аккаунт, чтобы открыть торговый профиль и получить 21 день полного доступа.</p>
+
+                <div class="kd-auth-tabs" role="tablist">
+                    <button type="button" class="active" data-auth-tab="signup">Регистрация</button>
+                    <button type="button" data-auth-tab="login">Вход</button>
+                </div>
+
+                <form id="kdSignupForm" class="kd-auth-form">
+                    <label>
+                        Имя
+                        <input id="kdSignupName" name="name" type="text" autocomplete="name" placeholder="Даниил" maxlength="80" required>
+                    </label>
+                    <label>
+                        Логин
+                        <input id="kdSignupUsername" name="username" type="text" autocomplete="username" placeholder="kriptodanik" maxlength="40" required>
+                    </label>
+                    <label>
+                        Email
+                        <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        Пароль
+                        <input name="password" type="password" autocomplete="new-password" placeholder="Минимум 8 символов" minlength="8" required>
+                    </label>
+                    <button class="kd-auth-submit" type="submit">Создать аккаунт</button>
+                </form>
+
+                <form id="kdLoginForm" class="kd-auth-form" hidden>
+                    <label>
+                        Email
+                        <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                    <label>
+                        Пароль
+                        <input name="password" type="password" autocomplete="current-password" placeholder="Ваш пароль" required>
+                    </label>
+                    <button class="kd-auth-submit" type="submit">Войти</button>
+                </form>
+
+                <div id="kdAccountPanel" class="kd-account-panel" hidden>
+                    <div class="kd-plan-card">
+                        <span>Аккаунт</span>
+                        <strong id="kdPanelPlan">FREE</strong>
+                        <small id="kdPanelUntil">21 день полного доступа</small>
+                    </div>
+                    <button class="kd-pro-button" id="kdUpgradeButton" type="button">Подключить PRO · 4,99 $</button>
+                    <button class="kd-logout-button" id="kdLogoutButton" type="button">Выйти</button>
+                </div>
+
+                <div id="kdAuthError" class="kd-auth-error" aria-live="polite"></div>
+            </div>
+        </div>
+
+
         </main>
 
     </div>
@@ -1372,6 +1441,7 @@
 
     <script defer src="chart.js?v=1.22.0"></script>
     <script defer src="app.js?v=1.22.0"></script>
+    <script defer src="auth.js?v=1.0.1"></script>
     <script defer src="runtime-fixes.js?v=1.22.0"></script>
     <script defer src="scanner-pro.js?v=1.22.0"></script>
 </body>
