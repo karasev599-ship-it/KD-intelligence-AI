@@ -5,6 +5,13 @@ const chats=[
  {id:'team',name:'KD Team',handle:'@kd_team',avatar:'KD',tone:'',time:'09:15',preview:'Обновление системы будет сегодня',unread:0,status:'5 участников',group:true},
  {id:'vlad',name:'Владимир',handle:'@vlad',avatar:'В',tone:'green',time:'08:42',preview:'🎤 Голосовое сообщение',unread:0,status:'онлайн'}
 ];
+const users=[
+ {name:'Алексей',handle:'@alex_kd',avatar:'А',tone:'blue',status:'онлайн'},
+ {name:'Артём',handle:'@artem_trader',avatar:'А',tone:'green',status:'был недавно'},
+ {name:'Мария',handle:'@maria',avatar:'М',tone:'pink',status:'онлайн'},
+ {name:'Владимир',handle:'@vlad',avatar:'В',tone:'green',status:'онлайн'},
+ {name:'KD Team',handle:'@kd_team',avatar:'KD',tone:'',status:'5 участников',group:true}
+];
 const defaultMessages={ai:[
  {id:1,side:'in',text:'Привет! Есть минутка?',time:'09:38'},
  {id:2,side:'out',text:'Привет! Конечно. Что случилось?',time:'09:39'},
@@ -15,42 +22,60 @@ const defaultMessages={ai:[
 let active=localStorage.getItem('kd_active_chat')||'ai';
 let state=JSON.parse(localStorage.getItem('kd_demo_messages')||'null')||structuredClone(defaultMessages);
 let pinned=JSON.parse(localStorage.getItem('kd_pinned')||'[]');
+let customChats=JSON.parse(localStorage.getItem('kd_custom_chats')||'[]');
 const $=s=>document.querySelector(s), chatList=$('#chatList'),messages=$('#messages'),input=$('#messageInput'),typing=$('#typing'),toast=$('#toast');
 const timeNow=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-function save(){localStorage.setItem('kd_demo_messages',JSON.stringify(state));localStorage.setItem('kd_active_chat',active);localStorage.setItem('kd_pinned',JSON.stringify(pinned));}
+const allChats=()=>[...chats,...customChats];
+function save(){localStorage.setItem('kd_demo_messages',JSON.stringify(state));localStorage.setItem('kd_active_chat',active);localStorage.setItem('kd_pinned',JSON.stringify(pinned));localStorage.setItem('kd_custom_chats',JSON.stringify(customChats));}
 function escapeHtml(s){return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\':'&#92;'}[c]));}
 function renderChats(filter=''){
  chatList.innerHTML='';
- const list=[...chats].sort((a,b)=>(pinned.includes(b.id)?1:0)-(pinned.includes(a.id)?1:0));
+ const list=allChats().sort((a,b)=>(pinned.includes(b.id)?1:0)-(pinned.includes(a.id)?1:0));
  list.filter(c=>(c.name+' '+c.handle+' '+c.preview).toLowerCase().includes(filter.toLowerCase())).forEach(c=>{
   const el=document.createElement('div');el.className='chat '+(c.id===active?'active':'');el.dataset.id=c.id;
-  el.innerHTML=`<div class="chat-avatar ${c.tone}">${c.avatar}${c.verified?'<span class="verified">✓</span>':''}</div><div class="chat-copy"><b>${escapeHtml(c.name)}${pinned.includes(c.id)?'  📌':''}</b><p>${escapeHtml(c.preview)}</p></div><div class="chat-meta"><time>${c.time}</time>${c.unread?`<span class="unread">${c.unread}</span>`:''}</div>`;
+  el.innerHTML=`<div class="chat-avatar ${c.tone}">${escapeHtml(c.avatar)}${c.verified?'<span class="verified">✓</span>':''}</div><div class="chat-copy"><b>${escapeHtml(c.name)}${pinned.includes(c.id)?'  📌':''}</b><p>${escapeHtml(c.preview||'Новый чат')}</p></div><div class="chat-meta"><time>${c.time||''}</time>${c.unread?`<span class="unread">${c.unread}</span>`:''}</div>`;
   el.onclick=()=>selectChat(c.id);el.oncontextmenu=e=>{e.preventDefault();togglePin(c.id)};chatList.appendChild(el);
  });
- $('#unreadCount').textContent=chats.reduce((n,x)=>n+x.unread,0)||'';
+ $('#unreadCount').textContent=allChats().reduce((n,x)=>n+(x.unread||0),0)||'';
 }
 function renderMessages(){
- const c=chats.find(x=>x.id===active), list=state[active]||[];
+ const c=allChats().find(x=>x.id===active), list=state[active]||[];
+ if(!c)return;
  messages.innerHTML='<div class="day-divider">СЕГОДНЯ</div>'+list.map(m=>`<div class="msg ${m.side}" data-msg="${m.id}"><div class="bubble-wrap"><div class="bubble">${escapeHtml(m.text)}</div>${m.reaction?`<button class="reaction" data-reaction="${m.id}">❤️ ${m.reaction}</button>`:''}</div><div class="msg-meta">${m.time}${m.side==='out'?`  <span class="checks">✓✓</span>`:''}</div></div>`).join('');
  messages.scrollTop=messages.scrollHeight;
- $('#headerName').textContent=c.name;$('#headerStatus').textContent=c.status;$('#infoName').textContent=c.name;$('#infoHandle').textContent=c.handle;
+ $('#headerName').textContent=c.name;$('#headerStatus').textContent=c.status||'онлайн';$('#infoName').textContent=c.name;$('#infoHandle').textContent=c.handle||'';
  const description=document.querySelector('.profile-info p');if(description)description.textContent=c.group?'Группа KD • рабочее пространство':'Трейдинг • аналитика • KD Intelligence';
  messages.querySelectorAll('.bubble').forEach(b=>b.addEventListener('dblclick',()=>{const id=Number(b.closest('.msg').dataset.msg);react(id)}));
 }
-function selectChat(id){active=id;const c=chats.find(x=>x.id===id);c.unread=0;renderChats($('#chatSearch').value);renderMessages();save();if(innerWidth<=720)$('#sidebar').classList.remove('open');}
+function selectChat(id){active=id;const c=allChats().find(x=>x.id===id);if(c)c.unread=0;renderChats($('#chatSearch').value);renderMessages();save();if(innerWidth<=720)$('#sidebar').classList.remove('open');}
 function showToast(text){toast.textContent=text;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1800)}
 function togglePin(id){pinned.includes(id)?pinned=pinned.filter(x=>x!==id):pinned.push(id);renderChats($('#chatSearch').value);save();showToast(pinned.includes(id)?'Чат закреплён 📌':'Чат откреплён')}
 function react(id){const msg=(state[active]||[]).find(m=>m.id===id);if(!msg)return;msg.reaction=(msg.reaction||0)+1;renderMessages();save();showToast('Реакция добавлена ❤️')}
-function sendMessage(text){if(!text)return;const msg={id:Date.now(),side:'out',text,time:timeNow(),read:true};(state[active]??=[]).push(msg);const c=chats.find(x=>x.id===active);c.preview=text;c.time=msg.time;input.value='';renderMessages();renderChats($('#chatSearch').value);save();typing.hidden=false;setTimeout(()=>{typing.hidden=true;const replies=['Принял 👍','Ок, смотрю.','Хорошая идея.','Давай обсудим вечером.'];const reply={id:Date.now()+1,side:'in',text:replies[Math.floor(Math.random()*replies.length)],time:timeNow()};state[active].push(reply);c.preview=reply.text;c.time=reply.time;renderMessages();renderChats($('#chatSearch').value);save()},850)}
+function sendMessage(text){if(!text)return;const msg={id:Date.now(),side:'out',text,time:timeNow(),read:true};(state[active]??=[]).push(msg);const c=allChats().find(x=>x.id===active);c.preview=text;c.time=msg.time;input.value='';renderMessages();renderChats($('#chatSearch').value);save();typing.hidden=false;setTimeout(()=>{typing.hidden=true;const replies=['Принял 👍','Ок, смотрю.','Хорошая идея.','Давай обсудим вечером.'];const reply={id:Date.now()+1,side:'in',text:replies[Math.floor(Math.random()*replies.length)],time:timeNow()};state[active].push(reply);c.preview=reply.text;c.time=reply.time;renderMessages();renderChats($('#chatSearch').value);save()},850)}
+function openUserSearch(){
+ const old=document.querySelector('.kd-modal');if(old)old.remove();
+ const modal=document.createElement('div');modal.className='kd-modal';modal.innerHTML=`<div class="kd-modal-card"><div class="kd-modal-head"><div><b>Новый чат</b><small>Найди человека по имени или @username</small></div><button class="kd-close">×</button></div><input class="kd-user-search" placeholder="Например @alex_kd" autofocus><div class="kd-user-results"></div></div>`;
+ document.body.appendChild(modal);const search=modal.querySelector('.kd-user-search'),results=modal.querySelector('.kd-user-results');
+ const draw=()=>{const q=search.value.trim().toLowerCase();const found=users.filter(u=>(u.name+' '+u.handle).toLowerCase().includes(q));results.innerHTML=(found.length?found:[]).map(u=>`<button class="kd-user" data-handle="${u.handle}"><span class="chat-avatar ${u.tone}">${u.avatar}</span><span><b>${escapeHtml(u.name)}</b><small>${escapeHtml(u.handle)} • ${escapeHtml(u.status)}</small></span><span>›</span></button>`).join('')||'<div class="kd-empty">Ничего не найдено</div>';results.querySelectorAll('.kd-user').forEach(btn=>btn.onclick=()=>startChat(users.find(u=>u.handle===btn.dataset.handle),modal));};
+ search.oninput=draw;modal.querySelector('.kd-close').onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};draw();
+}
+function startChat(user,modal){if(!user)return;let c=allChats().find(x=>x.handle===user.handle);if(!c){c={id:'user_'+user.handle.slice(1),name:user.name,handle:user.handle,avatar:user.avatar,tone:user.tone,time:timeNow(),preview:'Новый чат',unread:0,status:user.status,group:user.group};customChats.push(c);state[c.id]=[{id:Date.now(),side:'in',text:`Привет! Это новый чат с ${user.name}.`,time:timeNow()}];}active=c.id;save();modal.remove();renderChats();renderMessages();showToast(`Чат с ${user.name} создан`)}
+function openProfile(){
+ const old=document.querySelector('.kd-modal');if(old)old.remove();
+ const name=localStorage.getItem('kd_name')||'Даниил',handle=localStorage.getItem('kd_handle')||'@kd_official';
+ const modal=document.createElement('div');modal.className='kd-modal';modal.innerHTML=`<div class="kd-modal-card"><div class="kd-modal-head"><div><b>Профиль KD</b><small>Настройки локального профиля</small></div><button class="kd-close">×</button></div><label>Имя</label><input id="profileName" value="${escapeHtml(name)}"><label>@username</label><input id="profileHandle" value="${escapeHtml(handle)}"><button class="kd-primary" id="saveProfile">Сохранить профиль</button></div>`;
+ document.body.appendChild(modal);modal.querySelector('.kd-close').onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};modal.querySelector('#saveProfile').onclick=()=>{localStorage.setItem('kd_name',modal.querySelector('#profileName').value.trim()||'Даниил');localStorage.setItem('kd_handle',modal.querySelector('#profileHandle').value.trim()||'@kd_official');modal.remove();showToast('Профиль сохранён ✓')};
+}
 $('#composer').addEventListener('submit',e=>{e.preventDefault();sendMessage(input.value.trim())});
 $('#chatSearch').addEventListener('input',e=>renderChats(e.target.value));
 $('#themeBtn').onclick=()=>{document.body.classList.toggle('light');localStorage.setItem('kd_theme',document.body.classList.contains('light')?'light':'dark');showToast(document.body.classList.contains('light')?'Светлая тема':'Тёмная тема')};
-$('#newChat').onclick=()=>showToast('Поиск пользователей подключим после backend');
+$('#newChat').onclick=openUserSearch;
 $('#attach').onclick=()=>showToast('Фото, файлы и голосовые — следующий этап');
 $('#emoji').onclick=()=>{input.value+='🙂';input.focus()};
-$('#profileBtn').onclick=()=>showToast('Профиль KD — следующий этап');
+$('#profileBtn').onclick=openProfile;
 $('#openSidebar').onclick=()=>$('#sidebar').classList.add('open');$('#closeSidebar').onclick=()=>$('#sidebar').classList.remove('open');
 ['.top-actions .icon-btn:first-child','.top-actions .icon-btn:nth-child(2)','.top-actions .icon-btn:nth-child(3)'].forEach((sel,i)=>$(sel)?.addEventListener('click',()=>showToast(['Звонки подключим после backend','Поиск в чате — следующий этап','Меню чата — следующий этап'][i])));
 document.querySelectorAll('.side-tabs button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.side-tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');showToast(btn.dataset.tab==='chats'?'Чаты':btn.dataset.tab==='calls'?'Звонки':'Контакты')});
 if(localStorage.getItem('kd_theme')==='light')document.body.classList.add('light');
+const extraStyle=document.createElement('style');extraStyle.textContent=`.kd-modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(0,0,0,.62);backdrop-filter:blur(12px);padding:20px}.kd-modal-card{width:min(460px,100%);background:#11131b;border:1px solid #292d3b;border-radius:24px;padding:24px;box-shadow:0 30px 90px #0009;color:#fff}.light .kd-modal-card{background:#fff;color:#111}.kd-modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.kd-modal-head b{font-size:22px;display:block}.kd-modal-head small{opacity:.55;display:block;margin-top:5px}.kd-close{border:0;background:#252936;color:#fff;border-radius:12px;width:38px;height:38px;font-size:24px}.kd-user-search,.kd-modal-card label+input,.kd-modal-card input:not(.kd-user-search){width:100%;box-sizing:border-box;padding:14px 16px;border-radius:14px;border:1px solid #303442;background:#0b0d13;color:inherit;outline:none;margin-bottom:10px}.light .kd-user-search,.light .kd-modal-card input{background:#f3f4f7;border-color:#ddd}.kd-user{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:inherit;padding:12px 4px;text-align:left;cursor:pointer}.kd-user>span:nth-child(2){flex:1}.kd-user small{display:block;opacity:.55;margin-top:3px}.kd-empty{padding:25px;text-align:center;opacity:.5}.kd-primary{width:100%;border:0;border-radius:14px;padding:14px;background:#fff;color:#08090d;font-weight:800;margin-top:8px;cursor:pointer}.light .kd-primary{background:#111;color:#fff}.kd-modal-card label{font-size:12px;opacity:.55;display:block;margin:8px 0 5px}`;document.head.appendChild(extraStyle);
 renderChats();renderMessages();
