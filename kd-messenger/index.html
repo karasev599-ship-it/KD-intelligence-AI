@@ -1,70 +1,13 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#08080d">
-  <meta name="description" content="KD Messenger — быстрый приватный мессенджер KD.">
-  <title>KD Messenger</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand-row">
-        <div class="brand-mark">KD</div>
-        <div><strong>KD</strong><span>MESSENGER</span></div>
-        <button class="icon-btn mobile-only" id="closeSidebar" aria-label="Закрыть">×</button>
-      </div>
-      <div class="me-card">
-        <div class="avatar avatar-me">Д</div>
-        <div class="me-copy"><b>Даниил</b><span>@kd_official</span></div>
-        <i class="online-dot"></i>
-      </div>
-      <div class="search-box"><span>⌕</span><input id="chatSearch" placeholder="Поиск чатов"></div>
-      <nav class="side-tabs" aria-label="Разделы">
-        <button class="active" data-tab="chats">💬 <span>Чаты</span><em id="unreadCount">3</em></button>
-        <button data-tab="calls">☎ <span>Звонки</span></button>
-        <button data-tab="contacts">♙ <span>Контакты</span></button>
-      </nav>
-      <div class="section-label">ЧАТЫ <button id="newChat" title="Новый чат">＋</button></div>
-      <div class="chat-list" id="chatList"></div>
-      <div class="sidebar-bottom">
-        <button class="bottom-btn" id="profileBtn">⚙ <span>Настройки</span></button>
-        <button class="bottom-btn" id="themeBtn">☾ <span>Тема</span></button>
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <button class="icon-btn mobile-only" id="openSidebar">☰</button>
-        <div class="top-title"><span class="status-pill"></span><div><b id="headerName">KRIPTODANIK AI</b><small id="headerStatus">онлайн</small></div></div>
-        <div class="top-actions"><button class="icon-btn" title="Звонок">☎</button><button class="icon-btn" title="Поиск">⌕</button><button class="icon-btn" title="Ещё">•••</button></div>
-      </header>
-
-      <section class="messages" id="messages"></section>
-
-      <div class="typing" id="typing" hidden><span></span><span></span><span></span> печатает…</div>
-      <form class="composer" id="composer">
-        <button type="button" class="attach-btn" id="attach">＋</button>
-        <input id="messageInput" autocomplete="off" placeholder="Сообщение…">
-        <button type="button" class="emoji-btn" id="emoji">☺</button>
-        <button type="submit" class="send-btn" id="send">➤</button>
-      </form>
-    </main>
-
-    <aside class="info-panel" id="infoPanel">
-      <div class="profile-cover"><div class="profile-avatar">KD</div></div>
-      <div class="profile-info"><h2 id="infoName">KRIPTODANIK AI</h2><span id="infoHandle">@kriptodanik_ai</span><p>Трейдинг • аналитика • KD Intelligence</p></div>
-      <div class="info-actions"><button>🔔<small>Уведомления</small></button><button>⌕<small>Поиск</small></button><button>⋮<small>Ещё</small></button></div>
-      <div class="info-block"><label>ОПИСАНИЕ</label><p>Закрытый рабочий чат KD. Сигналы, идеи и обновления проекта.</p></div>
-      <div class="info-block"><label>МЕДИА И ФАЙЛЫ</label><div class="media-grid"><div></div><div></div><div></div></div></div>
-    </aside>
-  </div>
-  <div class="toast" id="toast"></div>
-  <script src="app.js"></script>
-</body>
-</html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08080d"><title>KD Messenger</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;background:#08080d;color:#f7f7fb;overflow:hidden}.app{height:100dvh;display:grid;grid-template-columns:310px minmax(420px,1fr) 290px;background:radial-gradient(circle at 50% -10%,rgba(115,92,255,.16),transparent 35%),#08080d}.side,.info{background:rgba(10,10,15,.96);border-color:#24242d}.side{border-right:1px solid #202028;display:flex;flex-direction:column}.brand{height:72px;display:flex;align-items:center;gap:11px;padding:0 18px;border-bottom:1px solid #202028}.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,#7663ff,#a794ff)}.brand b{display:block}.brand small{color:#777784;letter-spacing:2px;font-size:8px}.me{margin:14px;padding:11px;border:1px solid #282831;background:#111117;border-radius:15px;display:flex;gap:10px;align-items:center}.ava{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,#40376c,#17151f)}.me span{font-size:10px;color:#858592;display:block;margin-top:3px}.dot{margin-left:auto;width:8px;height:8px;background:#55df88;border-radius:50%;box-shadow:0 0 10px #55df88}.search{margin:0 14px 12px;padding:10px 12px;border-radius:11px;background:#15151c;color:#777;border:1px solid #24242c}.search input{border:0;outline:0;background:transparent;color:white;width:90%;font:inherit;font-size:12px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0 12px 8px}.tabs button,.bottom button{border:0;border-radius:10px;background:transparent;color:#777784;padding:9px 4px;cursor:pointer}.tabs .active{background:#1b1a23;color:#fff}.label{font-size:9px;color:#686875;font-weight:800;letter-spacing:1.6px;padding:8px 18px}.chats{overflow:auto;flex:1;padding:0 9px}.chat{display:flex;gap:10px;padding:11px 8px;border-radius:13px;cursor:pointer}.chat.active{background:linear-gradient(90deg,rgba(119,99,255,.19),rgba(119,99,255,.06))}.chatava{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#20202b;font-size:12px;font-weight:800}.chatcopy{min-width:0;flex:1}.chatcopy b,.chatcopy p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.chatcopy b{font-size:12px}.chatcopy p{font-size:10px;color:#777784;margin:5px 0 0}.meta{font-size:8px;color:#656571}.unread{display:block;margin-top:13px;background:#7562ff;color:#fff;border-radius:9px;padding:3px 6px;text-align:center}.bottom{display:flex;gap:6px;padding:10px;border-top:1px solid #202028}.bottom button{flex:1;background:#111117;border:1px solid #24242c;font-size:10px}.main{min-width:0;display:flex;flex-direction:column}.top{height:72px;border-bottom:1px solid #202028;display:flex;align-items:center;padding:0 20px;gap:10px}.status{width:8px;height:8px;border-radius:50%;background:#55df88}.title{flex:1;min-width:0}.title b,.title small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title b{font-size:13px}.title small{font-size:9px;color:#777784;margin-top:4px}.actions button{background:#13131a;border:1px solid #24242c;color:#999;border-radius:10px;width:34px;height:34px;margin-left:4px}.messages{flex:1;overflow:auto;padding:25px clamp(15px,5vw,65px);display:flex;flex-direction:column;gap:9px}.day{align-self:center;color:#666673;background:#111118;border:1px solid #22222b;border-radius:9px;padding:6px 10px;font-size:8px;margin-bottom:9px}.msg{max-width:min(70%,520px)}.msg.in{align-self:flex-start}.msg.out{align-self:flex-end;text-align:right}.bubble{display:inline-block;padding:10px 13px;border-radius:15px;background:#181820;border:1px solid #24242c;font-size:12px;line-height:1.45;text-align:left}.out .bubble{background:linear-gradient(135deg,#5142a9,#6956c8);border-bottom-right-radius:5px}.in .bubble{border-bottom-left-radius:5px}.time{font-size:8px;color:#666672;margin:4px 3px}.composer{margin:0 20px 18px;padding:7px;border:1px solid #26262f;background:#111118;border-radius:16px;display:flex;gap:5px;align-items:center}.composer input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:white;padding:8px;font:14px inherit}.composer button{border:0;background:transparent;color:#888;font-size:20px}.send{width:38px!important;height:38px;border-radius:12px!important;background:linear-gradient(135deg,#7562ff,#9b88ff)!important;color:#fff!important}.info{border-left:1px solid #202028;padding:18px}.cover{height:130px;margin:-18px -18px 0;display:grid;place-items:center;background:radial-gradient(circle,rgba(118,98,255,.35),transparent 55%),#101017}.bigava{width:72px;height:72px;border-radius:22px;display:grid;place-items:center;font-size:20px;font-weight:900;background:linear-gradient(135deg,#7663ff,#30295d)}.profile{text-align:center;padding:17px 0}.profile h2{font-size:15px;margin:0 0 5px}.profile span{font-size:10px;color:#777784}.profile p{font-size:9px;color:#777784;line-height:1.5}.info hr{border:0;border-top:1px solid #202028;margin:18px 0}.info label{font-size:8px;color:#686875;letter-spacing:1.4px;font-weight:800}.info p{font-size:10px;color:#8b8b97;line-height:1.5}.mobile{display:none}
+@media(max-width:1050px){.app{grid-template-columns:290px 1fr}.info{display:none}}@media(max-width:720px){.app{display:block}.side{position:fixed;inset:0 auto 0 0;width:88vw;max-width:320px;z-index:5;transform:translateX(-105%);transition:.2s;box-shadow:20px 0 50px #000}.side.open{transform:none}.main{height:100dvh}.mobile{display:inline-grid}.top{height:62px;padding:0 12px}.actions button:nth-child(n+2){display:none}.messages{padding:18px 12px}.msg{max-width:84%}.composer{margin:0 9px calc(9px + env(safe-area-inset-bottom))}.composer input{font-size:14px}}
+</style></head>
+<body><div class="app"><aside class="side" id="side"><div class="brand"><div class="logo">KD</div><div><b>KD</b><small>MESSENGER</small></div><button class="mobile" onclick="closeSide()">×</button></div><div class="me"><div class="ava">Д</div><div><b>Даниил</b><span>@kd_official</span></div><i class="dot"></i></div><div class="search">⌕ <input id="search" placeholder="Поиск чатов"></div><div class="tabs"><button class="active">💬 Чаты</button><button onclick="toast('Звонки — следующий этап')">☎</button><button onclick="toast('Контакты — следующий этап')">♙</button></div><div class="label">ЧАТЫ</div><div class="chats" id="chats"></div><div class="bottom"><button onclick="toast('Профиль — следующий этап')">⚙ Настройки</button><button onclick="theme()">☾ Тема</button></div></aside><main class="main"><header class="top"><button class="mobile" onclick="openSide()">☰</button><span class="status"></span><div class="title"><b id="title">KRIPTODANIK AI</b><small id="sub">онлайн</small></div><div class="actions"><button onclick="toast('Звонки подключим после backend')">☎</button><button onclick="toast('Поиск в чате — следующий этап')">⌕</button><button onclick="toast('Меню чата — следующий этап')">•••</button></div></header><section class="messages" id="messages"></section><form class="composer" onsubmit="send(event)"><button type="button" onclick="document.getElementById('input').value+='🙂'">☺</button><input id="input" autocomplete="off" placeholder="Сообщение…"><button type="submit" class="send">➤</button></form></main><aside class="info"><div class="cover"><div class="bigava">KD</div></div><div class="profile"><h2 id="pname">KRIPTODANIK AI</h2><span>@kriptodanik_ai</span><p>Трейдинг • аналитика • KD Intelligence</p></div><hr><label>ОПИСАНИЕ</label><p>Закрытый рабочий чат KD. Сигналы, идеи и обновления проекта.</p><hr><label>МЕДИА И ФАЙЛЫ</label></aside></div><script>
+const chats=[['ai','KRIPTODANIK AI','Сигнал: BTC/USDT • Лонг зона 26800 → 27000','09:41','2'],['traders','Трейдеры KD','Артём: Забрал профит по BTC ✅','09:35','12'],['maria','Мария','📷 Фото','09:21',''],['team','KD Team','Обновление системы будет сегодня','09:15',''],['vlad','Владимир','🎤 Голосовое сообщение','08:42','']];
+const msgs={ai:[['in','Привет! Есть минутка?','09:38'],['out','Привет! Конечно. Что случилось?','09:39'],['in','Посмотри BTC. Кажется, формируется хороший вход.','09:39'],['out','Вижу. Жду подтверждение и не лезу раньше времени 👌','09:40'],['in','Согласен. Тогда держим зону под наблюдением.','09:41']],traders:[['in','🔥 Забрал профит по BTC','09:28'],['in','Отличная сделка, я тоже зафиксировал часть.','09:29'],['out','Красиво. Главное — не отдавать профит обратным входом 😄','09:30']],maria:[['in','Смотри, что нашла 😄','09:21']],team:[['in','Обновление системы будет сегодня в 23:00.','09:15']],vlad:[['in','Записал голосовое, послушай когда будет время.','08:42']]};let active='ai';
+function esc(s){return s.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]))}function renderChats(){let q=document.getElementById('search').value.toLowerCase();document.getElementById('chats').innerHTML=chats.filter(c=>(c[1]+c[2]).toLowerCase().includes(q)).map(c=>`<div class="chat ${c[0]===active?'active':''}" onclick="select('${c[0]}')"><div class="chatava">${c[0]==='ai'?'KD':c[0]==='traders'?'TK':c[0]==='maria'?'М':c[0]==='team'?'KD':'В'}</div><div class="chatcopy"><b>${c[1]}</b><p>${c[2]}</p></div><div class="meta">${c[3]}${c[4]?`<span class="unread">${c[4]}</span>`:''}</div></div>`).join('')}function render(){let c=chats.find(x=>x[0]===active);document.getElementById('title').textContent=c[1];document.getElementById('sub').textContent=active==='ai'?'онлайн':active==='traders'?'26 онлайн':active==='team'?'5 участников':'онлайн';document.getElementById('pname').textContent=c[1];document.getElementById('messages').innerHTML='<div class="day">СЕГОДНЯ</div>'+msgs[active].map(m=>`<div class="msg ${m[0]}"><div class="bubble">${esc(m[1])}</div><div class="time">${m[2]}${m[0]==='out'?'  ✓✓':''}</div></div>`).join('');let box=document.getElementById('messages');box.scrollTop=box.scrollHeight}function select(id){active=id;renderChats();render();if(innerWidth<=720)closeSide()}function send(e){e.preventDefault();let i=document.getElementById('input'),t=i.value.trim();if(!t)return;let d=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});msgs[active].push(['out',t,d]);i.value='';render();setTimeout(()=>{msgs[active].push(['in',['Принял 👍','Ок, смотрю.','Хорошая идея.'][Math.floor(Math.random()*3)],new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})]);render()},800)}function toast(t){let x=document.getElementById('toast');if(!x){x=document.createElement('div');x.id='toast';x.style='position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#1b1b25;color:#fff;padding:10px 15px;border-radius:11px;z-index:20;font-size:12px';document.body.appendChild(x)}x.textContent=t;x.hidden=false;clearTimeout(window.tt);window.tt=setTimeout(()=>x.hidden=true,1700)}function theme(){document.body.classList.toggle('light');toast('Тема переключена')}function openSide(){document.getElementById('side').classList.add('open')}function closeSide(){document.getElementById('side').classList.remove('open')}document.getElementById('search').oninput=renderChats;renderChats();render();
+</script></body></html>
