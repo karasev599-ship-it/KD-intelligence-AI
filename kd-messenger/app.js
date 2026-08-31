@@ -34,7 +34,7 @@ function renderMessages(){
  messages.innerHTML='<div class="day-divider">СЕГОДНЯ</div>'+list.map(m=>`<div class="msg ${m.side}" data-msg="${m.id}"><div class="bubble-wrap"><div class="bubble">${escapeHtml(m.text)}</div>${m.reaction?`<button class="reaction" data-reaction="${m.id}">❤️ ${m.reaction}</button>`:''}</div><div class="msg-meta">${m.time}${m.side==='out'?`  <span class="checks">✓✓</span>`:''}</div></div>`).join('');
  messages.scrollTop=messages.scrollHeight;
  $('#headerName').textContent=c.name;$('#headerStatus').textContent=c.status;$('#infoName').textContent=c.name;$('#infoHandle').textContent=c.handle;
- $('#profileDescription').textContent=c.group?'Группа KD • рабочее пространство':'Трейдинг • аналитика • KD Intelligence';
+ const description=document.querySelector('.profile-info p');if(description)description.textContent=c.group?'Группа KD • рабочее пространство':'Трейдинг • аналитика • KD Intelligence';
  messages.querySelectorAll('.bubble').forEach(b=>b.addEventListener('dblclick',()=>{const id=Number(b.closest('.msg').dataset.msg);react(id)}));
 }
 function selectChat(id){active=id;const c=chats.find(x=>x.id===id);c.unread=0;renderChats($('#chatSearch').value);renderMessages();save();if(innerWidth<=720)$('#sidebar').classList.remove('open');}
