@@ -1,3 +1,15 @@
+import 'package:flutter/foundation.dart';
+
+class KdMessageSearchController extends ChangeNotifier {
+  String _query = '';
+  bool _active = false;
+  String get query => _query;
+  bool get active => _active;
+  void open() { _active = true; notifyListeners(); }
+  void close() { _active = false; _query = ''; notifyListeners(); }
+  void setQuery(String value) { _query = value; notifyListeners(); }
+}
+
 class KdMessageSearchResult {
   const KdMessageSearchResult({required this.messageId, required this.text, required this.senderName, required this.timestamp});
   final String messageId;
