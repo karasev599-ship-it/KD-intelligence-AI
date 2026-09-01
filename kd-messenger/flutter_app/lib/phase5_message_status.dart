@@ -15,6 +15,7 @@ class KdMessageStatusIcon extends StatelessWidget {
       KdMessageStatus.read => (Icons.done_all, 'Прочитано'),
       KdMessageStatus.failed => (Icons.error_outline, 'Не отправлено'),
     };
-    return Semantics(label: label, child: Icon(icon, size: 15));
+    final color = status == KdMessageStatus.read ? Theme.of(context).colorScheme.primary : null;
+    return Semantics(label: label, child: Icon(icon, size: 15, color: color));
   }
 }
