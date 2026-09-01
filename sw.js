@@ -1,11 +1,12 @@
-const CACHE = "kd-intelligence-v1.12.5";
+const CACHE = "kd-intelligence-v1.13.0";
 const CORE = [
   "./",
   "./index.html",
   "./style.css?v=1.12.5",
   "./chart.js?v=1.12.0",
   "./brand-fallback.js?v=1.12.5",
-  "./interaction-recovery.js?v=1.12.5",
+  "./interaction-recovery.js?v=1.12.6",
+  "./owner-auth-fixes.js?v=1.0.0",
   "./app.js?v=1.12.0",
   "./runtime-fixes.js?v=1.12.3",
   "./scanner-pro.js?v=1.12.0",
@@ -25,5 +26,5 @@ self.addEventListener("fetch", event => {
   event.respondWith(fetch(event.request, { cache: "no-store" }).then(response => {
     if (response && response.ok) { const copy=response.clone(); caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{}); }
     return response;
-  }).catch(() => caches.match(event.request).then(response => response || caches.match("./index.html"))));
+  }).catch(() => caches.match(event.request).then(response => response || caches.match("./index.html")));
 });
