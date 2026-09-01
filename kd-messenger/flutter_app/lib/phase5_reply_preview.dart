@@ -11,12 +11,20 @@ class KdReplyPreview extends StatelessWidget {
     container: true,
     label: 'Ответ $author: $text',
     child: Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-      decoration: BoxDecoration(border: Border(left: BorderSide(width: 3, color: Theme.of(context).colorScheme.primary)), borderRadius: BorderRadius.circular(10), color: Colors.white.withValues(alpha: .06)),
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 2),
+      padding: const EdgeInsets.fromLTRB(12, 8, 6, 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border(left: BorderSide(width: 3, color: Theme.of(context).colorScheme.primary)),
+      ),
       child: Row(children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(author, style: const TextStyle(fontWeight: FontWeight.w700)), const SizedBox(height: 2), Text(text, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white60))])),
-        if (onClose != null) Semantics(button: true, label: 'Отменить ответ', child: IconButton(onPressed: onClose, icon: const Icon(Icons.close, size: 18))),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(author, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+          const SizedBox(height: 3),
+          Text(text, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+        ])),
+        if (onClose != null) Semantics(button: true, label: 'Отменить ответ', child: IconButton(tooltip: 'Отменить ответ', onPressed: onClose, icon: const Icon(Icons.close, size: 18))),
       ]),
     ),
   );
