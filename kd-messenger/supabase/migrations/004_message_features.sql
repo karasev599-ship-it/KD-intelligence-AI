@@ -13,28 +13,28 @@ alter table public.kd_message_reactions enable row level security;
 do $$ begin
   create policy kd_reactions_member_read on public.kd_message_reactions
     for select to authenticated using (
-      exists (select 1 from public.kd_messages x where x.id = message_id and public.kd_is_member(x.conversation_id))
+      exists (select 1 from public.kd_messages x join public.kd_conversation_members cm on cm.conversation_id=x.conversation_id where x.id=message_id and cm.user_id=auth.uid())
     );
 exception when duplicate_object then null;
 end $$;
 
 do $$ begin
   create policy kd_reactions_self_insert on public.kd_message_reactions
-    for insert to authenticated with check (user_id = auth.uid() and exists (
-      select 1 from public.kd_messages x where x.id = message_id and public.kd_is_member(x.conversation_id)
+    for insert to authenticated with check (user_id=auth.uid() and exists (
+      select 1 from public.kd_messages x join public.kd_conversation_members cm on cm.conversation_id=x.conversation_id where x.id=message_id and cm.user_id=auth.uid()
     ));
 exception when duplicate_object then null;
 end $$;
 
 do $$ begin
   create policy kd_reactions_self_delete on public.kd_message_reactions
-    for delete to authenticated using (user_id = auth.uid());
+    for delete to authenticated using (user_id=auth.uid());
 exception when duplicate_object then null;
 end $$;
 
 do $$ begin
   create policy kd_messages_sender_delete on public.kd_messages
-    for update to authenticated using (sender_id = auth.uid()) with check (sender_id = auth.uid());
+    for update to authenticated using (sender_id=auth.uid()) with check (sender_id=auth.uid());
 exception when duplicate_object then null;
 end $$;
 
