@@ -27,8 +27,7 @@ on conflict (id) do update set
   file_size_limit = 52428800,
   allowed_mime_types = excluded.allowed_mime_types;
 
-alter table storage.objects enable row level security;
-
+-- Supabase Storage manages RLS on storage.objects; only object policies are added here.
 do $$ begin
   create policy kd_messenger_media_read on storage.objects
     for select to authenticated using (
