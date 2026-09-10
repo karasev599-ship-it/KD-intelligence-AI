@@ -92,13 +92,14 @@ function localCoachReply(message, context = {}) {
 export default async function handler(req, res) {
   if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
   try {
+    const user = await currentUser(req);
+    if (!user) return json(res, 401, { error: "Войдите в аккаунт." });
+
     const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
     const message = String(body.message || "").trim();
     if (!message) return json(res, 400, { error: "Message is required." });
     if (message.length > 8000) return json(res, 413, { error: "Message is too long." });
 
-    // Free local mode: quick questions continue to work even before the OpenAI
-    // gateway is paid/configured. Once the gateway works, the real model is used.
     if (!process.env.OPENAI_API_KEY) {
       return json(res, 200, { reply: localCoachReply(message, body.context), model: "local", webSearch: false, local: true });
     }
@@ -109,8 +110,6 @@ export default async function handler(req, res) {
     const upstream = await fetch(OPENAI_URL,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${process.env.OPENAI_API_KEY}`},body:JSON.stringify(payload)});
     const data = await upstream.json().catch(()=>({}));
 
-    // Billing/credit/temporary gateway failures should not kill the Coach.
-    // Fall back to the same free local engine instead of returning a blank chat.
     if (!upstream.ok) {
       console.warn("OpenAI unavailable, using local Coach fallback:", data?.error?.message || upstream.status);
       return json(res, 200, { reply: localCoachReply(message, body.context), model: "local", webSearch: false, local: true, gatewayError: true });
@@ -119,7 +118,7 @@ export default async function handler(req, res) {
     const reply=String(data?.output_text||"").trim();
     if(!reply) return json(res,200,{reply:localCoachReply(message,body.context),model:"local",webSearch:false,local:true});
 
-    try { const user=await currentUser(req); await sbJson('ai_usage',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user?.id||null,kind:'coach',model:MODEL})}); } catch(e) { console.warn('AI usage logging skipped:',e?.message||e); }
+    try { await sbJson('ai_usage',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,kind:'coach',model:MODEL})}); } catch(e) { console.warn('AI usage logging skipped:',e?.message||e); }
     return json(res,200,{reply,model:MODEL,webSearch:useWeb});
   } catch(error) {
     console.error("AI Coach gateway error:",error);
