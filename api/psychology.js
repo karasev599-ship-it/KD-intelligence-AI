@@ -1,3 +1,5 @@
+import { currentUser } from './auth.js';
+
 const OPENAI_URL = 'https://api.openai.com/v1/responses';
 const MODEL = process.env.PSYCHOLOGY_MODEL || 'gpt-5.6-luna';
 
@@ -54,6 +56,9 @@ function localAnalysis(trades) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
   try {
+    const user = await currentUser(req);
+    if (!user) return json(res, 401, { error: 'Войдите в аккаунт.' });
+
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const trades = clampTrades(body.trades);
     if (trades.length > 200) return json(res, 413, { error: 'Too many trades.' });
