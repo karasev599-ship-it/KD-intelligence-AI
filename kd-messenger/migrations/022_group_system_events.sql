@@ -1,0 +1,10 @@
+create table if not exists public.kd_group_system_events(id uuid primary key default gen_random_uuid(),conversation_id uuid not null references public.kd_conversations(id) on delete cascade,actor_id uuid references auth.users(id) on delete set null,event_type text not null check(event_type in ('created','joined','left','removed','promoted','demoted','renamed')),target_user_id uuid references auth.users(id) on delete set null,old_value text,new_value text,created_at timestamptz not null default now());
+create index if not exists kd_group_system_events_conv_created_idx on public.kd_group_system_events(conversation_id,created_at desc);
+alter table public.kd_group_system_events enable row level security;
+drop policy if exists kd_group_system_events_select on public.kd_group_system_events;
+create policy kd_group_system_events_select on public.kd_group_system_events for select using(exists(select 1 from public.kd_conversation_members m where m.conversation_id=kd_group_system_events.conversation_id and m.user_id=auth.uid()));
+drop function if exists public.kd_group_log_event(uuid,text,uuid,text,text);
+create or replace function public.kd_group_log_event(p_conversation_id uuid,p_event_type text,p_target_user_id uuid default null,p_old_value text default null,p_new_value text default null) returns uuid language plpgsql security definer set search_path=public as $$declare x uuid;begin if not exists(select 1 from kd_conversation_members where conversation_id=p_conversation_id and user_id=auth.uid()) then raise exception 'not a member'; end if; insert into kd_group_system_events(conversation_id,actor_id,event_type,target_user_id,old_value,new_value) values(p_conversation_id,auth.uid(),p_event_type,p_target_user_id,p_old_value,p_new_value) returning id into x; return x;end$$;
+grant execute on function public.kd_group_log_event(uuid,text,uuid,text,text) to authenticated;
+alter table public.kd_group_system_events replica identity full;
+do $$begin alter publication supabase_realtime add table public.kd_group_system_events; exception when duplicate_object then null; end$$;
