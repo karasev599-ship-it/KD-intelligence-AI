@@ -7,7 +7,8 @@
     try{
       if(window.supabase&&!window.__KD_SUPABASE_CLIENT__)window.__KD_SUPABASE_CLIENT__=window.supabase.createClient(URL,KEY);
       await load(CDN);
-      await load('./kd-messenger/profile-stories.js?v=1');
+      await load('./kd-messenger/profile-stories.js?v=2');
+      await load('./kd-messenger/chat-profile-ui.js?v=1');
     }catch(e){console.error('KD Messenger modules failed to load',e)}
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
