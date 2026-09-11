@@ -8,6 +8,8 @@
     );
     const FN='https://qqofizfqkctycyeafgsa.supabase.co/functions/v1/kd-ai-agent';
     const $=s=>document.querySelector(s);
+    const decorated=new WeakSet();
+    let scanTimer=0;
     const toast=x=>{
       const t=$('#toast');
       if(t){
@@ -73,12 +75,18 @@
           toast('Готово — вставлено в сообщение');
         }
       };
-      r.querySelector('[data-a="copy"]').onclick=()=>navigator.clipboard?.writeText(text||'');
+      r.querySelector('[data-a="copy"]').onclick=async()=>{
+        try{
+          await navigator.clipboard.writeText(text||'');
+          toast('Скопировано');
+        }catch{toast('Не удалось скопировать');}
+      };
       r.querySelector('[data-a="remember"]').onclick=async()=>{
-        if(window.kdSaveMemory){
+        if(!window.kdSaveMemory){toast('KD Memory пока недоступна');return;}
+        try{
           await window.kdSaveMemory(text||'');
           toast('Сохранено в KD Memory');
-        }
+        }catch{toast('Не удалось сохранить');}
       };
       return r;
     }
@@ -88,6 +96,7 @@
       if(!r.ok)throw Error('Не удалось загрузить видео');
       const blob=await r.blob();
       if(!blob.type.startsWith('video/'))throw Error('Файл не является видео');
+      if(blob.size>40*1024*1024)throw Error('Видео слишком большое для AI (максимум 40 МБ)');
       return URL.createObjectURL(blob);
     }
 
@@ -147,21 +156,26 @@
       }
     }
 
+    async function signedUrl(path){
+      const q=await sb.storage.from('kd-messenger').createSignedUrl(path,600);
+      if(q.error||!q.data?.signedUrl)throw Error('Не удалось получить доступ к медиа');
+      return q.data.signedUrl;
+    }
+
     async function decorate(el){
-      if(el.querySelector('.kd-media-ai'))return;
+      if(decorated.has(el)||el.querySelector('.kd-media-ai'))return;
       const id=el.dataset.messageId;
       if(!id)return;
+      decorated.add(el);
 
       const row=await sb.from('kd_messages')
         .select('attachment_path,attachment_type,message_type,attachment_name')
         .eq('id',id)
         .maybeSingle();
+      if(row.error){decorated.delete(el);return;}
       const d=row.data;
       if(!d?.attachment_path)return;
       if(!['voice','video_note'].includes(d.message_type)&&!d.attachment_type?.startsWith('image/'))return;
-
-      const q=await sb.storage.from('kd-messenger').createSignedUrl(d.attachment_path,600);
-      if(q.error||!q.data?.signedUrl)return;
 
       const box=document.createElement('div');
       box.className='kd-media-ai';
@@ -174,14 +188,15 @@
           const buttons=[...box.querySelectorAll('button')];
           buttons.forEach(b=>b.disabled=true);
           try{
+            const url=await signedUrl(d.attachment_path);
             const res=await call({
               mode:'transcribe',
-              audio_url:q.data.signedUrl,
+              audio_url:url,
               text:k==='summary'?'Расшифруй и кратко перескажи голосовое.':k==='reply'?'Расшифруй голосовое и предложи естественный ответ.':k==='translate'?'Расшифруй голосовое и переведи содержание на русский.':'Точно расшифруй голосовое и расставь знаки препинания.'
             });
             result(box,res.answer||'Нет ответа');
             toast('KD AI готов');
-          }catch(x){toast('KD AI: '+x.message)}
+          }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
           finally{buttons.forEach(b=>b.disabled=false)}
         };
       }else if(d.attachment_type?.startsWith('image/')){
@@ -192,18 +207,21 @@
           const buttons=[...box.querySelectorAll('button')];
           buttons.forEach(b=>b.disabled=true);
           try{
-            const r=await fetch(q.data.signedUrl,{mode:'cors',credentials:'omit'});
+            const url=await signedUrl(d.attachment_path);
+            const r=await fetch(url,{mode:'cors',credentials:'omit'});
             if(!r.ok)throw Error('Не удалось загрузить изображение');
             const b=await r.blob();
+            if(b.size>15*1024*1024)throw Error('Изображение слишком большое для AI (максимум 15 МБ)');
+            if(!b.type.startsWith('image/'))throw Error('Файл не является изображением');
             const res=await call({
               mode:'vision',
               image_base64:await b64(b),
               mime:b.type,
-              text:k==='text'?'Распознай весь видимый текст на изображении.':'Проанализируй изображение и опиши важные детали.'
+              text:k==='text'?'Распознай весь видимый текст на изображении. Если текста нет, так и скажи.':'Проанализируй изображение и опиши важные детали.'
             });
             result(box,res.answer||'Нет ответа');
             toast('KD AI готов');
-          }catch(x){toast('KD AI: '+x.message)}
+          }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
           finally{buttons.forEach(b=>b.disabled=false)}
         };
       }else{
@@ -216,18 +234,28 @@
             :k==='text'
               ?'Распознай весь видимый текст в этом кадре. Если текста нет, так и скажи.'
               :'Проанализируй этот кадр из видео-кружка и кратко объясни его содержание и важные детали.';
-          await analyzeVideoFrame(box,q.data.signedUrl,prompt);
+          try{
+            const url=await signedUrl(d.attachment_path);
+            await analyzeVideoFrame(box,url,prompt);
+          }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
         };
       }
 
       el.querySelector('.bubble')?.appendChild(box);
     }
 
+    function scheduleScan(){
+      clearTimeout(scanTimer);
+      scanTimer=setTimeout(all,180);
+    }
+
     async function all(){
-      for(const e of document.querySelectorAll('.msg[data-message-id]'))await decorate(e);
+      const items=[...document.querySelectorAll('.msg[data-message-id]')].filter(e=>!decorated.has(e));
+      if(!items.length)return;
+      await Promise.all(items.map(decorate));
     }
 
     setTimeout(all,1400);
-    new MutationObserver(()=>all()).observe(document.body,{childList:true,subtree:true});
+    new MutationObserver(scheduleScan).observe(document.body,{childList:true,subtree:true});
   },1800);
 })();
