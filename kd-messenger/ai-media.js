@@ -9,7 +9,9 @@
     const FN='https://qqofizfqkctycyeafgsa.supabase.co/functions/v1/kd-ai-agent';
     const $=s=>document.querySelector(s);
     const decorated=new WeakSet();
+    const aiCache=new Map();
     let scanTimer=0;
+
     const toast=x=>{
       const t=$('#toast');
       if(t){
@@ -57,6 +59,16 @@
       return d;
     }
 
+    async function cached(key,producer){
+      if(aiCache.has(key)){
+        toast('KD AI: результат из кэша');
+        return aiCache.get(key);
+      }
+      const value=await producer();
+      if(value)aiCache.set(key,value);
+      return value;
+    }
+
     function result(el,text){
       let r=el.querySelector('.kd-media-ai-result');
       if(!r){
@@ -100,12 +112,19 @@
       return URL.createObjectURL(blob);
     }
 
-    async function analyzeVideoFrame(box,url,prompt){
+    async function analyzeVideoFrame(box,url,prompt,cacheKey){
       const btns=[...box.querySelectorAll('button')];
       btns.forEach(b=>b.disabled=true);
       const r=result(box,'KD AI извлекает кадр…');
       let objectUrl='';
       try{
+        const cachedAnswer=aiCache.get(cacheKey);
+        if(cachedAnswer){
+          r.querySelector('.body').textContent=cachedAnswer;
+          toast('KD AI: результат из кэша');
+          return;
+        }
+
         objectUrl=await loadVideoBlob(url);
         const video=document.createElement('video');
         video.muted=true;
@@ -145,7 +164,9 @@
           mime:'image/jpeg',
           text:prompt
         });
-        r.querySelector('.body').textContent=answer.answer||'Нет ответа';
+        const text=answer.answer||'Нет ответа';
+        aiCache.set(cacheKey,text);
+        r.querySelector('.body').textContent=text;
         toast('KD AI готов');
       }catch(e){
         r.querySelector('.body').textContent='Ошибка KD AI: '+(e.message||'ошибка');
@@ -188,13 +209,17 @@
           const buttons=[...box.querySelectorAll('button')];
           buttons.forEach(b=>b.disabled=true);
           try{
-            const url=await signedUrl(d.attachment_path);
-            const res=await call({
-              mode:'transcribe',
-              audio_url:url,
-              text:k==='summary'?'Расшифруй и кратко перескажи голосовое.':k==='reply'?'Расшифруй голосовое и предложи естественный ответ.':k==='translate'?'Расшифруй голосовое и переведи содержание на русский.':'Точно расшифруй голосовое и расставь знаки препинания.'
+            const cacheKey=id+':voice:'+k;
+            const text=await cached(cacheKey,async()=>{
+              const url=await signedUrl(d.attachment_path);
+              const res=await call({
+                mode:'transcribe',
+                audio_url:url,
+                text:k==='summary'?'Расшифруй и кратко перескажи голосовое.':k==='reply'?'Расшифруй голосовое и предложи естественный ответ.':k==='translate'?'Расшифруй голосовое и переведи содержание на русский.':'Точно расшифруй голосовое и расставь знаки препинания.'
+              });
+              return res.answer||'Нет ответа';
             });
-            result(box,res.answer||'Нет ответа');
+            result(box,text);
             toast('KD AI готов');
           }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
           finally{buttons.forEach(b=>b.disabled=false)}
@@ -207,19 +232,23 @@
           const buttons=[...box.querySelectorAll('button')];
           buttons.forEach(b=>b.disabled=true);
           try{
-            const url=await signedUrl(d.attachment_path);
-            const r=await fetch(url,{mode:'cors',credentials:'omit'});
-            if(!r.ok)throw Error('Не удалось загрузить изображение');
-            const b=await r.blob();
-            if(b.size>15*1024*1024)throw Error('Изображение слишком большое для AI (максимум 15 МБ)');
-            if(!b.type.startsWith('image/'))throw Error('Файл не является изображением');
-            const res=await call({
-              mode:'vision',
-              image_base64:await b64(b),
-              mime:b.type,
-              text:k==='text'?'Распознай весь видимый текст на изображении. Если текста нет, так и скажи.':'Проанализируй изображение и опиши важные детали.'
+            const cacheKey=id+':image:'+k;
+            const text=await cached(cacheKey,async()=>{
+              const url=await signedUrl(d.attachment_path);
+              const r=await fetch(url,{mode:'cors',credentials:'omit'});
+              if(!r.ok)throw Error('Не удалось загрузить изображение');
+              const b=await r.blob();
+              if(b.size>15*1024*1024)throw Error('Изображение слишком большое для AI (максимум 15 МБ)');
+              if(!b.type.startsWith('image/'))throw Error('Файл не является изображением');
+              const res=await call({
+                mode:'vision',
+                image_base64:await b64(b),
+                mime:b.type,
+                text:k==='text'?'Распознай весь видимый текст на изображении. Если текста нет, так и скажи.':'Проанализируй изображение и опиши важные детали.'
+              });
+              return res.answer||'Нет ответа';
             });
-            result(box,res.answer||'Нет ответа');
+            result(box,text);
             toast('KD AI готов');
           }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
           finally{buttons.forEach(b=>b.disabled=false)}
@@ -236,7 +265,7 @@
               :'Проанализируй этот кадр из видео-кружка и кратко объясни его содержание и важные детали.';
           try{
             const url=await signedUrl(d.attachment_path);
-            await analyzeVideoFrame(box,url,prompt);
+            await analyzeVideoFrame(box,url,prompt,id+':video:'+k);
           }catch(x){result(box,'Ошибка KD AI: '+x.message);toast('KD AI: ошибка')}
         };
       }
