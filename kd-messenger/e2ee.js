@@ -39,18 +39,41 @@
     const cached=await dbGet(KEY_STORE,cid);if(cached?.key)return cached.key;
     const sb=await getClient(),session=(await sb.auth.getSession()).data.session;if(!session?.user)throw new Error('Not authenticated');
     const me=session.user.id;
-    let rows=(await sb.from('kd_conversation_keys').select('*').eq('conversation_id',cid)).data||[];
-    let own=rows.find(x=>x.user_id===me);
-    if(own){const key=await unwrapConversationKey(own);await dbPut(KEY_STORE,{conversation_id:cid,key,version:own.key_version||1});return key;}
+    const conv=(await sb.from('kd_conversations').select('id,kind,created_by').eq('id',cid).maybeSingle()).data;
+    if(!conv)throw new Error('Conversation not found');
+    if(conv.kind!=='direct')throw new Error('Групповое E2EE ещё не активировано');
+    const rows=(await sb.from('kd_conversation_keys').select('*').eq('conversation_id',cid)).data||[];
+    const own=rows.find(x=>x.user_id===me);
+    if(own){
+      const key=await unwrapConversationKey(own);
+      await dbPut(KEY_STORE,{conversation_id:cid,key,version:own.key_version||1});
+      return key;
+    }
     const members=(await sb.from('kd_conversation_members').select('user_id').eq('conversation_id',cid)).data||[];
     if(!members.some(x=>x.user_id===me))throw new Error('Not a conversation member');
-    const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
     const memberIds=[...new Set(members.map(x=>x.user_id))];
+    // Exactly one side is allowed to establish the initial conversation key.
+    // This prevents two simultaneous clients from generating different AES keys.
+    const initiator=conv.created_by||[...memberIds].sort()[0];
+    if(me!==initiator)throw new Error('E2EE key is being established by the conversation initiator');
+    const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
     const pubRows=(await sb.from('kd_identity_keys').select('user_id,public_key_jwk,key_version').in('user_id',memberIds)).data||[];
     const pubBy=new Map(pubRows.map(x=>[x.user_id,x]));
-    for(const uid of memberIds){const p=pubBy.get(uid);if(!p?.public_key_jwk?.ecdh)throw new Error('Участник ещё не зарегистрировал ключ E2EE');const wrapped=await wrapConversationKey(key,p.public_key_jwk);const row={conversation_id:cid,user_id:uid,sender_user_id:me,sender_public_key_jwk:{ecdh:identity.ecdhPublic,ecdsa:identity.ecdsaPublic},key_version:VERSION,...wrapped};const ins=await sb.from('kd_conversation_keys').insert(row);if(ins.error && !String(ins.error.message||'').toLowerCase().includes('duplicate'))throw ins.error;}
-    await dbPut(KEY_STORE,{conversation_id:cid,key,version:VERSION});
-    return key;
+    for(const uid of memberIds){
+      const p=pubBy.get(uid);
+      if(!p?.public_key_jwk?.ecdh)throw new Error('Участник ещё не зарегистрировал ключ E2EE');
+      const wrapped=await wrapConversationKey(key,p.public_key_jwk);
+      const row={conversation_id:cid,user_id:uid,sender_user_id:me,sender_public_key_jwk:{ecdh:identity.ecdhPublic,ecdsa:identity.ecdsaPublic},key_version:VERSION,...wrapped};
+      const ins=await sb.from('kd_conversation_keys').insert(row);
+      if(ins.error && !String(ins.error.message||'').toLowerCase().includes('duplicate'))throw ins.error;
+    }
+    // Never cache a locally-created key if another client won the race.
+    const finalRows=(await sb.from('kd_conversation_keys').select('*').eq('conversation_id',cid)).data||[];
+    const finalOwn=finalRows.find(x=>x.user_id===me);
+    if(!finalOwn)throw new Error('E2EE key establishment incomplete');
+    const finalKey=await unwrapConversationKey(finalOwn);
+    await dbPut(KEY_STORE,{conversation_id:cid,key:finalKey,version:finalOwn.key_version||1});
+    return finalKey;
   }
 
   async function encryptText(cid,text){const key=await conversationKey(cid),nonce=crypto.getRandomValues(new Uint8Array(12)),aad=textBytes('KD-E2EE-v1:'+cid),ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce,additionalData:aad},key,textBytes(text));return {e2ee_version:VERSION,ciphertext:b64(ct),cipher_nonce:b64(nonce),cipher_aad:b64(aad)};}
