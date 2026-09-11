@@ -83,17 +83,26 @@
       return r;
     }
 
+    async function loadVideoBlob(url){
+      const r=await fetch(url,{mode:'cors',credentials:'omit'});
+      if(!r.ok)throw Error('Не удалось загрузить видео');
+      const blob=await r.blob();
+      if(!blob.type.startsWith('video/'))throw Error('Файл не является видео');
+      return URL.createObjectURL(blob);
+    }
+
     async function analyzeVideoFrame(box,url,prompt){
       const btns=[...box.querySelectorAll('button')];
       btns.forEach(b=>b.disabled=true);
       const r=result(box,'KD AI извлекает кадр…');
+      let objectUrl='';
       try{
+        objectUrl=await loadVideoBlob(url);
         const video=document.createElement('video');
-        video.crossOrigin='anonymous';
         video.muted=true;
         video.playsInline=true;
         video.preload='metadata';
-        video.src=url;
+        video.src=objectUrl;
 
         await new Promise((resolve,reject)=>{
           const timer=setTimeout(()=>reject(Error('Не удалось загрузить видео')),12000);
@@ -106,14 +115,16 @@
         await new Promise((resolve,reject)=>{
           const timer=setTimeout(()=>reject(Error('Не удалось получить кадр')),8000);
           video.onseeked=()=>{clearTimeout(timer);resolve()};
+          video.onerror=()=>{clearTimeout(timer);reject(Error('Ошибка декодирования видео'))};
           video.currentTime=target;
         });
 
+        if(!video.videoWidth||!video.videoHeight)throw Error('Видео не содержит доступного кадра');
         const canvas=document.createElement('canvas');
         const max=1280;
-        const scale=Math.min(1,max/(video.videoWidth||max));
-        canvas.width=Math.max(1,Math.round((video.videoWidth||max)*scale));
-        canvas.height=Math.max(1,Math.round((video.videoHeight||max)*scale));
+        const scale=Math.min(1,max/video.videoWidth);
+        canvas.width=Math.max(1,Math.round(video.videoWidth*scale));
+        canvas.height=Math.max(1,Math.round(video.videoHeight*scale));
         const ctx=canvas.getContext('2d');
         if(!ctx)throw Error('Canvas недоступен');
         ctx.drawImage(video,0,0,canvas.width,canvas.height);
@@ -131,6 +142,7 @@
         r.querySelector('.body').textContent='Ошибка KD AI: '+(e.message||'ошибка');
         toast('KD AI: ошибка');
       }finally{
+        if(objectUrl)URL.revokeObjectURL(objectUrl);
         btns.forEach(b=>b.disabled=false);
       }
     }
@@ -180,7 +192,8 @@
           const buttons=[...box.querySelectorAll('button')];
           buttons.forEach(b=>b.disabled=true);
           try{
-            const r=await fetch(q.data.signedUrl);
+            const r=await fetch(q.data.signedUrl,{mode:'cors',credentials:'omit'});
+            if(!r.ok)throw Error('Не удалось загрузить изображение');
             const b=await r.blob();
             const res=await call({
               mode:'vision',
