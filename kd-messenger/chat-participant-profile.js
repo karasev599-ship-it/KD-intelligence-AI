@@ -18,11 +18,12 @@
   .kd-participant-trigger{cursor:pointer}
   `;
   const candidates=['sender_id','author_id','user_id','from_id','recipient_id','receiver_id','to_id','other_user_id','participant_id'];
-  const mediaKeys=['media_url','file_url','attachment_url','image_url','video_url','audio_url','voice_url'];
   const initial=v=>(String(v||'K').trim()[0]||'K').toUpperCase();
-  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const mount=sb=>{
     if(!sb||document.getElementById('kd-participant-card'))return;
+    const profileCache=new Map();
+    const participantCache=new Map();
     const style=document.createElement('style');style.textContent=CSS;document.head.appendChild(style);
     const card=document.createElement('div');card.id='kd-participant-card';card.className='kd-participant-card';card.innerHTML=`<section class="kd-participant-box"><div class="kd-participant-cover"></div><div class="kd-participant-body"><div class="kd-participant-avatar" id="kppAvatar">K</div><div class="kd-participant-name" id="kppName">Профиль</div><div class="kd-participant-username" id="kppUsername"></div><div class="kd-participant-online" id="kppOnline"></div><div class="kd-participant-bio" id="kppBio"></div><div class="kd-participant-meta" id="kppMeta"></div><button class="kd-participant-close" id="kppClose">Закрыть</button></div></section>`;
     document.body.appendChild(card);
@@ -35,21 +36,26 @@
       if(direct&&direct!==session.user.id)return direct;
       const mid=el.dataset.messageId;
       if(!mid)return null;
+      if(participantCache.has(mid))return participantCache.get(mid);
       const r=await sb.from('kd_messages').select('*').eq('id',mid).maybeSingle();
       if(r.error||!r.data)return null;
-      const row=r.data;
-      for(const key of candidates){const value=row[key];if(value&&String(value)!==String(session.user.id))return value}
-      for(const key of Object.keys(row)){if(!/id$/i.test(key))continue;const value=row[key];if(typeof value==='string'&&value.length>10&&value!==session.user.id&&/user|sender|author|recipient|receiver|from|to|member|participant/i.test(key))return value}
-      return null;
+      const row=r.data;let found=null;
+      for(const key of candidates){const value=row[key];if(value&&String(value)!==String(session.user.id)){found=value;break}}
+      if(!found){for(const key of Object.keys(row)){if(!/id$/i.test(key))continue;const value=row[key];if(typeof value==='string'&&value.length>10&&value!==session.user.id&&/user|sender|author|recipient|receiver|from|to|member|participant/i.test(key)){found=value;break}}}
+      if(found)participantCache.set(mid,found);
+      return found;
+    };
+    const renderProfile=async p=>{
+      q('kppName').textContent=p.display_name||'KD User';q('kppUsername').textContent=p.username?'@'+p.username:'';q('kppOnline').textContent=p.is_online?'● В сети':(p.status||'Был(а) недавно');q('kppBio').textContent=p.bio||'';
+      const av=q('kppAvatar');av.textContent=initial(p.display_name);av.style.backgroundImage='';
+      if(p.avatar_url){try{const u=await sb.storage.from(BUCKET).createSignedUrl(p.avatar_url,900);if(!u.error&&u.data?.signedUrl){av.textContent='';av.style.backgroundImage=`url("${u.data.signedUrl}")`}}catch{}}
+      const meta=[];if(p.username)meta.push('username');if(p.is_online)meta.push('онлайн');q('kppMeta').innerHTML=meta.map(x=>`<span class="kd-participant-chip">${esc(x)}</span>`).join('');
     };
     const loadProfile=async userId=>{
       reset();card.classList.add('open');
-      const r=await sb.from('kd_profiles').select('display_name,username,status,bio,avatar_url,is_online,last_seen').eq('id',userId).maybeSingle();
-      if(r.error||!r.data){q('kppMeta').innerHTML='<span class="kd-participant-error">Профиль временно недоступен</span>';return}
-      const p=r.data;q('kppName').textContent=p.display_name||'KD User';q('kppUsername').textContent=p.username?'@'+p.username:'';q('kppOnline').textContent=p.is_online?'● В сети':(p.status||'Был(а) недавно');q('kppBio').textContent=p.bio||'';
-      const av=q('kppAvatar');av.textContent=initial(p.display_name);
-      if(p.avatar_url){try{const u=await sb.storage.from(BUCKET).createSignedUrl(p.avatar_url,900);if(!u.error&&u.data?.signedUrl){av.textContent='';av.style.backgroundImage=`url("${u.data.signedUrl}")`}}catch{}}
-      const meta=[];if(p.username)meta.push('username');if(p.is_online)meta.push('онлайн');q('kppMeta').innerHTML=meta.map(x=>`<span class="kd-participant-chip">${esc(x)}</span>`).join('');
+      let p=profileCache.get(String(userId));
+      if(!p){const r=await sb.from('kd_profiles').select('display_name,username,status,bio,avatar_url,is_online,last_seen').eq('id',userId).maybeSingle();if(r.error||!r.data){q('kppMeta').innerHTML='<span class="kd-participant-error">Профиль временно недоступен</span>';return}p=r.data;profileCache.set(String(userId),p)}
+      await renderProfile(p);
     };
     const open=async el=>{
       const session=(await sb.auth.getSession()).data.session;if(!session)return;
@@ -63,13 +69,8 @@
         if(el.dataset.kppBound)return;
         el.dataset.kppBound='1';
         const trigger=el.querySelector(triggerSelectors.join(','));
-        if(trigger){
-          trigger.classList.add('kd-participant-trigger');
-          trigger.addEventListener('click',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true});
-        }else{
-          el.classList.add('kd-participant-trigger');
-          el.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true});
-        }
+        if(trigger){trigger.classList.add('kd-participant-trigger');trigger.addEventListener('click',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true})}
+        else{el.classList.add('kd-participant-trigger');el.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true})}
         count++;
       });
       return count;
