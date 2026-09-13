@@ -3,15 +3,17 @@
   'use strict';
   const SB_URL='https://qqofizfqkctycyeafgsa.supabase.co';
   const SB_KEY='sb_publishable_MTZuMyuzb0XdtBy3GZIQZw_pHbXc9xK';
-  let sb=null,wrapped=false;
+  let sb=null,wrapped=false,epochReady=false;
   function getSb(){if(sb)return sb;if(!window.supabase?.createClient)return null;sb=window.supabase.createClient(SB_URL,SB_KEY);return sb;}
   function toast(msg){const t=document.querySelector('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+  function loadEpochBridge(){return new Promise((resolve,reject)=>{if(window.kdE2EE?.__epochsReady){epochReady=true;return resolve()}const s=document.createElement('script');s.src='./e2ee-epochs.js';s.onload=()=>{epochReady=!!window.kdE2EE?.__epochsReady;resolve()};s.onerror=reject;document.head.appendChild(s)})}
   async function user(){const s=(await getSb().auth.getSession()).data.session;return s?.user||null;}
   async function secureSend(){
     const client=getSb(),u=await user(),input=document.querySelector('#messageInput'),cid=window.kdActiveConversation;
     if(!client||!u||!input||!cid)return;
     const text=input.value.trim();if(!text)return;
     try{
+      if(!epochReady)await loadEpochBridge();
       const enc=await window.kdE2EE.encryptText(cid,text);
       const r=await client.from('kd_messages').insert({conversation_id:cid,sender_id:u.id,body:null,message_type:'text',...enc}).select().single();
       if(r.error)throw r.error;
@@ -28,7 +30,8 @@
     const by=new Map((r.data||[]).map(x=>[x.id,x]));
     for(const el of document.querySelectorAll('#messages [data-message-id]')){const row=by.get(el.dataset.messageId);if(!row)continue;const bubble=el.querySelector('.bubble');if(!bubble)continue;if(row.e2ee_version&&row.ciphertext){const plain=await window.kdE2EE.decryptText(row.conversation_id,row);const reply=bubble.querySelector('.msg-reply');bubble.textContent='';if(reply)bubble.appendChild(reply);bubble.appendChild(document.createTextNode(plain));}}
   }
-  function install(){
+  async function install(){
+    try{await loadEpochBridge()}catch(e){console.warn('[KD E2EE epoch bridge]',e)}
     document.addEventListener('submit',e=>{if(e.target?.id!=='composer')return;e.preventDefault();e.stopImmediatePropagation();secureSend();},true);
     const observer=new MutationObserver(()=>{clearTimeout(observer._t);observer._t=setTimeout(decryptVisible,30);});
     const box=document.querySelector('#messages');if(box)observer.observe(box,{childList:true,subtree:true});
