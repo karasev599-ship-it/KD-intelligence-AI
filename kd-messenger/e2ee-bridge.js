@@ -24,7 +24,7 @@
     if(!window.kdE2EE?.decryptText||!window.kdActiveConversation)return;
     const ids=[...document.querySelectorAll('#messages [data-message-id]')].map(x=>x.dataset.messageId).filter(Boolean);if(!ids.length)return;
     const client=getSb();if(!client)return;
-    const r=await client.from('kd_messages').select('id,conversation_id,body,ciphertext,cipher_nonce,cipher_aad,e2ee_version').in('id',ids);if(r.error)return;
+    const r=await client.from('kd_messages').select('id,conversation_id,body,ciphertext,cipher_nonce,cipher_aad,e2ee_version,e2ee_key_version').in('id',ids);if(r.error)return;
     const by=new Map((r.data||[]).map(x=>[x.id,x]));
     for(const el of document.querySelectorAll('#messages [data-message-id]')){const row=by.get(el.dataset.messageId);if(!row)continue;const bubble=el.querySelector('.bubble');if(!bubble)continue;if(row.e2ee_version&&row.ciphertext){const plain=await window.kdE2EE.decryptText(row.conversation_id,row);const reply=bubble.querySelector('.msg-reply');bubble.textContent='';if(reply)bubble.appendChild(reply);bubble.appendChild(document.createTextNode(plain));}}
   }
