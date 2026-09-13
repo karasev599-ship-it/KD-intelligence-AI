@@ -19,7 +19,7 @@
   `;
   const candidates=['sender_id','author_id','user_id','from_id','recipient_id','receiver_id','to_id','other_user_id','participant_id'];
   const initial=v=>(String(v||'K').trim()[0]||'K').toUpperCase();
-  const esc=s=>String(s||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s||'').replace(/[&<>\\\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',"'":'&#39;'}[c]));
   const mount=sb=>{
     if(!sb||document.getElementById('kd-participant-card'))return;
     const profileCache=new Map();
@@ -65,10 +65,11 @@
     const bind=()=>{
       const nodes=document.querySelectorAll('.msg[data-message-id]');let count=0;
       const triggerSelectors=['[data-user-id]','[data-sender-id]','[data-author-id]','.avatar','.msg-avatar','.message-avatar','.sender-avatar','.sender-name','.message-sender','.msg-name'];
+      const selector=triggerSelectors.join(',');
       nodes.forEach(el=>{
         if(el.dataset.kppBound)return;
         el.dataset.kppBound='1';
-        const trigger=el.querySelector(triggerSelectors.join(','));
+        const trigger=el.matches(selector)?el:el.querySelector(selector);
         if(trigger){trigger.classList.add('kd-participant-trigger');trigger.addEventListener('click',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true})}
         else{el.classList.add('kd-participant-trigger');el.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true})}
         count++;
