@@ -19,7 +19,7 @@
   `;
   const candidates=['sender_id','author_id','user_id','from_id','recipient_id','receiver_id','to_id','other_user_id','participant_id'];
   const initial=v=>(String(v||'K').trim()[0]||'K').toUpperCase();
-  const esc=s=>String(s||'').replace(/[&<>\\\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s||'').replace(/[&<>\\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const mount=sb=>{
     if(!sb||document.getElementById('kd-participant-card'))return;
     const profileCache=new Map();
@@ -48,7 +48,7 @@
     const renderProfile=async p=>{
       q('kppName').textContent=p.display_name||'KD User';q('kppUsername').textContent=p.username?'@'+p.username:'';q('kppOnline').textContent=p.is_online?'● В сети':(p.status||'Был(а) недавно');q('kppBio').textContent=p.bio||'';
       const av=q('kppAvatar');av.textContent=initial(p.display_name);av.style.backgroundImage='';
-      if(p.avatar_url){try{const u=await sb.storage.from(BUCKET).createSignedUrl(p.avatar_url,900);if(!u.error&&u.data?.signedUrl){av.textContent='';av.style.backgroundImage=`url("${u.data.signedUrl}")`}}catch{}}
+      if(p.avatar_url){try{const u=await sb.storage.from(BUCKET).createSignedUrl(p.avatar_url,900);if(!u.error&&u.data?.signedUrl){av.textContent='';av.style.backgroundImage=`url(\"${u.data.signedUrl}\")`}}catch{}}
       const meta=[];if(p.username)meta.push('username');if(p.is_online)meta.push('онлайн');q('kppMeta').innerHTML=meta.map(x=>`<span class="kd-participant-chip">${esc(x)}</span>`).join('');
     };
     const loadProfile=async userId=>{
