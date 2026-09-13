@@ -58,7 +58,20 @@
     };
     const bind=()=>{
       const nodes=document.querySelectorAll('.msg[data-message-id]');let count=0;
-      nodes.forEach(el=>{if(el.dataset.kppBound)return;el.dataset.kppBound='1';el.classList.add('kd-participant-trigger');el.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true});count++});
+      const triggerSelectors=['[data-user-id]','[data-sender-id]','[data-author-id]','.avatar','.msg-avatar','.message-avatar','.sender-avatar','.sender-name','.message-sender','.msg-name'];
+      nodes.forEach(el=>{
+        if(el.dataset.kppBound)return;
+        el.dataset.kppBound='1';
+        const trigger=el.querySelector(triggerSelectors.join(','));
+        if(trigger){
+          trigger.classList.add('kd-participant-trigger');
+          trigger.addEventListener('click',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true});
+        }else{
+          el.classList.add('kd-participant-trigger');
+          el.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,textarea,video,audio'))return;open(el)},{passive:true});
+        }
+        count++;
+      });
       return count;
     };
     bind();new MutationObserver(()=>bind()).observe(document.body,{childList:true,subtree:true});
