@@ -14,8 +14,13 @@
     const client=window.__KD_SUPABASE_CLIENT__;
     const api={element:head,userId:null,show:()=>head.classList.add('show'),hide:()=>head.classList.remove('show'),refresh:()=>refresh()};
     window.KDConversationHeader=api;
+    let lastDetectedUserId=null;
+    let lastProfileSignature='';
     const setProfile=p=>{
       const name=p?.display_name||p?.username||'Пользователь';
+      const signature=[name,p?.status,p?.is_online,p?.avatar_url].map(v=>String(v||'')).join('|');
+      if(signature===lastProfileSignature)return;
+      lastProfileSignature=signature;
       head.querySelector('.kd-conv-name').textContent=name;
       head.querySelector('.kd-conv-status').textContent=p?.is_online?'в сети':(p?.status||'был(а) недавно');
       head.classList.toggle('online',!!p?.is_online);
@@ -34,6 +39,8 @@
       const session=(await client.auth.getSession()).data.session;if(!session)return;
       const userId=await findParticipant(session);if(!userId)return;
       api.userId=userId;
+      if(String(userId)===String(lastDetectedUserId))return;
+      lastDetectedUserId=userId;
       const r=await client.from('kd_profiles').select('display_name,username,status,avatar_url,is_online,last_seen').eq('id',userId).maybeSingle();
       if(!r.error&&r.data){setProfile(r.data);head.classList.add('show')}
     };
@@ -43,7 +50,7 @@
       else if(window.KDChatParticipantProfile?.open)window.KDChatParticipantProfile.open({dataset:{userId:api.userId}});
     });
     refresh();
-    const obs=new MutationObserver(()=>{clearTimeout(head.__kdRefreshTimer);head.__kdRefreshTimer=setTimeout(refresh,250)});obs.observe(document.body,{childList:true,subtree:true});
+    const obs=new MutationObserver(()=>{clearTimeout(head.__kdRefreshTimer);head.__kdRefreshTimer=setTimeout(refresh,400)});obs.observe(document.body,{childList:true,subtree:true});
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,3600),{once:true});else setTimeout(mount,3600);
 })();
