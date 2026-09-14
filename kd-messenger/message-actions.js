@@ -1,9 +1,12 @@
 (()=>{
   if(window.__KD_MESSAGE_ACTIONS__)return;
-  window.__KD_MESSAGE_ACTIONS__=true;
-  const client=window.__KD_SUPABASE_CLIENT__;
-  if(!client)return;
-
+  const waitForClient=(tries=0)=>{
+    const client=window.__KD_SUPABASE_CLIENT__;
+    if(!client){if(tries<40)setTimeout(()=>waitForClient(tries+1),250);else console.error('KD message actions: Supabase client not ready');return}
+    window.__KD_MESSAGE_ACTIONS__=true;
+    init(client);
+  };
+  const init=client=>{
   const STYLE=`
   .kd-msg-actions-menu{position:fixed;z-index:100000;min-width:190px;padding:6px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(25,23,34,.98);box-shadow:0 16px 48px rgba(0,0,0,.4);backdrop-filter:blur(16px);font:600 13px system-ui,sans-serif}
   .kd-msg-actions-menu button{display:block;width:100%;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:#fff;text-align:left;cursor:pointer}
@@ -41,7 +44,6 @@
     const s=await session();if(!s)throw new Error('Необходима авторизация');
     const msg=await fetchMessage(id);if(!msg)throw new Error('Сообщение уже удалено');
     if(String(msg.sender_id)!==String(s.user.id))throw new Error('Удалять у всех может только автор сообщения');
-    // Keep the row as a tombstone: reactions, replies, pins and other FK records depend on it.
     const r=await client.from('kd_messages').update({deleted_at:new Date().toISOString(),body:null,attachment_url:null,attachment_name:null,attachment_path:null}).eq('id',id).eq('sender_id',s.user.id);
     if(r.error)throw r.error;
     markDeleted(id,'Сообщение удалено у всех');
@@ -90,4 +92,6 @@
   const boot=async()=>{bind();await hydrate();realtime()};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.KDMessageActions={deleteForMe,deleteForEveryone,refresh:hydrate};
+  };
+  waitForClient();
 })();
