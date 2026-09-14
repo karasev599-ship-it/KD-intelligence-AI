@@ -41,7 +41,8 @@
     const s=await session();if(!s)throw new Error('Необходима авторизация');
     const msg=await fetchMessage(id);if(!msg)throw new Error('Сообщение уже удалено');
     if(String(msg.sender_id)!==String(s.user.id))throw new Error('Удалять у всех может только автор сообщения');
-    const r=await client.from('kd_messages').delete().eq('id',id).eq('sender_id',s.user.id);
+    // Keep the row as a tombstone: reactions, replies, pins and other FK records depend on it.
+    const r=await client.from('kd_messages').update({deleted_at:new Date().toISOString(),body:null,attachment_url:null,attachment_name:null,attachment_path:null}).eq('id',id).eq('sender_id',s.user.id);
     if(r.error)throw r.error;
     markDeleted(id,'Сообщение удалено у всех');
   };
@@ -57,7 +58,7 @@
     add('Удалить у меня',()=>run(deleteForMe,'Сообщение удалено у вас'));
     if(!s||!sender||String(sender)===String(s.user.id))add('Удалить у всех',()=>run(deleteForEveryone,'Сообщение удалено у всех'),'danger');
     document.body.appendChild(menu);
-    const w=innerWidth,h=innerHeight,r=menu.getBoundingClientRect();menu.style.left=Math.min(x,w-r.width-8)+'px';menu.style.top=Math.min(y,h-r.height-8)+'px';
+    const w=innerWidth,h=innerHeight,r=menu.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(x,w-r.width-8))+'px';menu.style.top=Math.max(8,Math.min(y,h-r.height-8))+'px';
   };
 
   const hydrate=async()=>{
@@ -65,7 +66,7 @@
     if(!s)return;
     const r=await client.from('kd_message_deletions').select('message_id').eq('user_id',s.user.id);
     if(!r.error)(r.data||[]).forEach(x=>markDeleted(x.message_id,'Сообщение удалено у вас'));
-    document.querySelectorAll('[data-message-id]').forEach(el=>{if(el.querySelector('.kd-msg-deleted-label'))return;const label=document.createElement('div');label.className='kd-msg-deleted-label';el.appendChild(label)});
+    document.querySelectorAll('[data-message-id]').forEach(el=>{if(!el.querySelector('.kd-msg-deleted-label')){const label=document.createElement('div');label.className='kd-msg-deleted-label';el.appendChild(label)}});
   };
 
   const bind=()=>{
@@ -80,7 +81,7 @@
 
   const realtime=()=>{
     const ch=client.channel('kd-message-deletion-sync')
-      .on('postgres_changes',{event:'DELETE',schema:'public',table:'kd_messages'},p=>{if(p.old?.id)markDeleted(p.old.id,'Сообщение удалено у всех')})
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'kd_messages'},p=>{if(p.new?.id&&p.new?.deleted_at)markDeleted(p.new.id,'Сообщение удалено у всех')})
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'kd_message_deletions'},p=>{if(p.new?.user_id&&window.__KD_MESSAGE_ACTIONS_SESSION__?.user?.id===p.new.user_id)markDeleted(p.new.message_id,'Сообщение удалено у вас')})
       .subscribe();
     window.__KD_MESSAGE_ACTIONS_CHANNEL__=ch;
