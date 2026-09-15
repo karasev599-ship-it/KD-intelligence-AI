@@ -18,7 +18,7 @@
   `;
   const style=document.createElement('style');style.id='kd-message-actions-css';style.textContent=STYLE;document.head.appendChild(style);
 
-  let menu=null,longPressTimer=null;
+  let menu=null,longPressTimer=null,longPressTarget=null;
   const getId=el=>el?.dataset?.messageId||el?.closest?.('[data-message-id]')?.dataset?.messageId||null;
   const getNode=id=>document.querySelector(`[data-message-id="${CSS.escape(String(id))}"]`);
   const markDeleted=(id,label='Сообщение удалено')=>{
@@ -29,6 +29,7 @@
     l.textContent=label;
     [...el.querySelectorAll('img,video,audio,iframe')].forEach(x=>{if(x.tagName==='IFRAME')x.remove();else{x.removeAttribute('src');x.style.display='none'}});
   };
+  const clearLongPress=()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}longPressTarget=null};
   const closeMenu=()=>{if(menu){menu.remove();menu=null}};
   const toast=msg=>{let t=document.getElementById('kd-delete-toast');if(!t){t=document.createElement('div');t.id='kd-delete-toast';Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',zIndex:'100001',padding:'10px 14px',borderRadius:'10px',background:'rgba(20,20,28,.96)',color:'#fff',font:'600 13px system-ui',boxShadow:'0 10px 30px rgba(0,0,0,.3)'});document.body.appendChild(t)}t.textContent=msg;t.style.display='block';clearTimeout(t.__timer);t.__timer=setTimeout(()=>t.style.display='none',2200)};
   const session=async()=>{const r=await client.auth.getSession();return r?.data?.session||null};
@@ -74,9 +75,16 @@
   const bind=()=>{
     if(window.__KD_MESSAGE_ACTIONS_BOUND__)return;window.__KD_MESSAGE_ACTIONS_BOUND__=true;
     document.addEventListener('contextmenu',e=>{const msg=e.target.closest?.('[data-message-id]');if(!msg)return;e.preventDefault();openMenu(msg,e.clientX,e.clientY)},{passive:false});
-    document.addEventListener('pointerdown',e=>{const msg=e.target.closest?.('[data-message-id]');if(!msg||e.pointerType!=='touch')return;clearTimeout(longPressTimer);longPressTimer=setTimeout(()=>openMenu(msg,e.clientX,e.clientY),550)},{passive:true});
-    document.addEventListener('pointerup',()=>clearTimeout(longPressTimer),{passive:true});
-    document.addEventListener('pointercancel',()=>clearTimeout(longPressTimer),{passive:true});
+    document.addEventListener('pointerdown',e=>{
+      const msg=e.target.closest?.('[data-message-id]');
+      if(!msg||e.pointerType!=='touch')return;
+      clearLongPress();longPressTarget=msg;
+      longPressTimer=setTimeout(()=>{if(longPressTarget===msg)openMenu(msg,e.clientX,e.clientY);clearLongPress()},550);
+    },{passive:true});
+    document.addEventListener('pointerup',clearLongPress,{passive:true});
+    document.addEventListener('pointercancel',clearLongPress,{passive:true});
+    document.addEventListener('pointermove',e=>{if(!longPressTarget||e.pointerType!=='touch')return;if(Math.abs(e.movementX)>8||Math.abs(e.movementY)>8)clearLongPress()},{passive:true});
+    document.addEventListener('scroll',clearLongPress,{passive:true,capture:true});
     document.addEventListener('click',e=>{if(menu&&!e.target.closest('.kd-msg-actions-menu'))closeMenu()},{passive:true});
     new MutationObserver(()=>{document.querySelectorAll('[data-message-id]').forEach(el=>{if(!el.querySelector('.kd-msg-deleted-label')){const l=document.createElement('div');l.className='kd-msg-deleted-label';el.appendChild(l)}})}).observe(document.body,{childList:true,subtree:true});
   };
