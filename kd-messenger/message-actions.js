@@ -16,7 +16,8 @@
   .kd-msg-deleted .kd-msg-deleted-label{display:block!important}
   .kd-msg-deleted-label{display:none;margin-top:4px;font-size:11px;font-style:italic;color:#aaa}
   `;
-  const style=document.createElement('style');style.id='kd-message-actions-css';style.textContent=STYLE;document.head.appendChild(style);
+  let style=document.getElementById('kd-message-actions-css');
+  if(!style){style=document.createElement('style');style.id='kd-message-actions-css';style.textContent=STYLE;document.head.appendChild(style)}
 
   let menu=null,longPressTimer=null,longPressTarget=null;
   const getId=el=>el?.dataset?.messageId||el?.closest?.('[data-message-id]')?.dataset?.messageId||null;
@@ -29,6 +30,7 @@
     l.textContent=label;
     [...el.querySelectorAll('img,video,audio,iframe')].forEach(x=>{if(x.tagName==='IFRAME')x.remove();else{x.removeAttribute('src');x.style.display='none'}});
   };
+  const ensureDeletedLabel=el=>{if(!el?.matches?.('[data-message-id]'))return;if(!el.querySelector('.kd-msg-deleted-label')){const l=document.createElement('div');l.className='kd-msg-deleted-label';el.appendChild(l)}};
   const clearLongPress=()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}longPressTarget=null};
   const closeMenu=()=>{if(menu){menu.remove();menu=null}};
   const toast=msg=>{let t=document.getElementById('kd-delete-toast');if(!t){t=document.createElement('div');t.id='kd-delete-toast';Object.assign(t.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',zIndex:'100001',padding:'10px 14px',borderRadius:'10px',background:'rgba(20,20,28,.96)',color:'#fff',font:'600 13px system-ui',boxShadow:'0 10px 30px rgba(0,0,0,.3)'});document.body.appendChild(t)}t.textContent=msg;t.style.display='block';clearTimeout(t.__timer);t.__timer=setTimeout(()=>t.style.display='none',2200)};
@@ -69,7 +71,7 @@
     if(!s)return;
     const r=await client.from('kd_message_deletions').select('message_id').eq('user_id',s.user.id);
     if(!r.error)(r.data||[]).forEach(x=>markDeleted(x.message_id,'Сообщение удалено у вас'));
-    document.querySelectorAll('[data-message-id]').forEach(el=>{if(!el.querySelector('.kd-msg-deleted-label')){const label=document.createElement('div');label.className='kd-msg-deleted-label';el.appendChild(label)}});
+    document.querySelectorAll('[data-message-id]').forEach(ensureDeletedLabel);
   };
 
   const bind=()=>{
@@ -86,7 +88,15 @@
     document.addEventListener('pointermove',e=>{if(!longPressTarget||e.pointerType!=='touch')return;if(Math.abs(e.movementX)>8||Math.abs(e.movementY)>8)clearLongPress()},{passive:true});
     document.addEventListener('scroll',clearLongPress,{passive:true,capture:true});
     document.addEventListener('click',e=>{if(menu&&!e.target.closest('.kd-msg-actions-menu'))closeMenu()},{passive:true});
-    new MutationObserver(()=>{document.querySelectorAll('[data-message-id]').forEach(el=>{if(!el.querySelector('.kd-msg-deleted-label')){const l=document.createElement('div');l.className='kd-msg-deleted-label';el.appendChild(l)}})}).observe(document.body,{childList:true,subtree:true});
+    new MutationObserver(mutations=>{
+      for(const mutation of mutations){
+        for(const node of mutation.addedNodes){
+          if(node.nodeType!==1)continue;
+          ensureDeletedLabel(node);
+          node.querySelectorAll?.('[data-message-id]').forEach(ensureDeletedLabel);
+        }
+      }
+    }).observe(document.body,{childList:true,subtree:true});
   };
 
   const realtime=()=>{
