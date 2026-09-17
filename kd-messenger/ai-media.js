@@ -1,4 +1,6 @@
 (()=>{
+  if(window.__KD_MESSENGER_BOOT__)return;
+  window.__KD_MESSENGER_BOOT__=true;
   const CDN='https://cdn.jsdelivr.net/gh/karasev599-ship-it/KD-intelligence-AI@c524e436b4a1b68a29b4dde3032c92361626a3ab/kd-messenger/ai-media.js';
   const URL='https://qqofizfqkctycyeafgsa.supabase.co';
   const KEY=atob('c2JfcHVibGlzaGFibGVfTVRadU15dXpiMFhkdEJ5M0daSVFad19wSGJYYzl4Sw==');
@@ -7,10 +9,10 @@
     try{
       if(window.supabase&&!window.__KD_SUPABASE_CLIENT__)window.__KD_SUPABASE_CLIENT__=window.supabase.createClient(URL,KEY);
       await load(CDN);
-      await load('./kd-messenger/profile-stories.js?v=2');
-      await load('./kd-messenger/chat-profile-ui.js?v=1');
-      await load('./kd-messenger/calls.js?v=2');
-    }catch(e){console.error('KD Messenger modules failed to load',e)}
+      await load('./kd-messenger/profile-stories.js?v=3');
+      await load('./kd-messenger/chat-profile-ui.js?v=2');
+      await load('./kd-messenger/calls.js?v=3');
+    }catch(e){console.error('KD Messenger modules failed to load',e);window.__KD_MESSENGER_BOOT_ERROR__=e}
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
