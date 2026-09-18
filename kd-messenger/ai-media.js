@@ -11,7 +11,7 @@
       await load(CDN);
       await load('./kd-messenger/profile-stories.js?v=4');
       await load('./kd-messenger/chat-profile-ui.js?v=2');
-      await load('./kd-messenger/calls.js?v=4');
+      await load('./kd-messenger/calls.js?v=5');
     }catch(e){console.error('KD Messenger modules failed to load',e);window.__KD_MESSENGER_BOOT_ERROR__=e}
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
