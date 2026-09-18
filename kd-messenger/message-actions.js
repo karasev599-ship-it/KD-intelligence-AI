@@ -49,6 +49,7 @@
     if(String(msg.sender_id)!==String(s.user.id))throw new Error('Удалять у всех может только автор сообщения');
     const r=await client.from('kd_messages').update({deleted_at:new Date().toISOString(),body:null,attachment_url:null,attachment_name:null,attachment_path:null}).eq('id',id).eq('sender_id',s.user.id);
     if(r.error)throw r.error;
+    if(msg.attachment_path){try{const sr=await client.storage.from('kd-messenger').remove([msg.attachment_path]);if(sr.error)console.warn('KD message attachment cleanup:',sr.error)}catch(e){console.warn('KD message attachment cleanup:',e)}}
     markDeleted(id,'Сообщение удалено у всех');
   };
 
