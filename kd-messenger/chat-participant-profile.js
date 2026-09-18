@@ -37,11 +37,11 @@
       const mid=el.dataset.messageId;
       if(!mid)return null;
       if(participantCache.has(mid))return participantCache.get(mid);
-      const r=await sb.from('kd_messages').select('*').eq('id',mid).maybeSingle();
+      const r=await sb.from('kd_messages').select('sender_id').eq('id',mid).maybeSingle();
       if(r.error||!r.data)return null;
       const row=r.data;let found=null;
       for(const key of candidates){const value=row[key];if(value&&String(value)!==String(session.user.id)){found=value;break}}
-      if(!found){for(const key of Object.keys(row)){if(!/id$/i.test(key))continue;const value=row[key];if(typeof value==='string'&&value.length>10&&value!==session.user.id&&/user|sender|author|recipient|receiver|from|to|member|participant/i.test(key)){found=value;break}}}
+      if(!found&&row.sender_id&&String(row.sender_id)!==String(session.user.id))found=row.sender_id;
       if(found)participantCache.set(mid,found);
       return found;
     };
