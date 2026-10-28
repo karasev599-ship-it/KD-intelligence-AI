@@ -11,7 +11,7 @@ const CORE = [
   "./runtime-fixes.js?v=1.22.0",
   "./scanner-pro.js?v=1.22.0",
   "./auth.js?v=1.0.1",
-  "./sw-register.js?v=1.12.3",
+  "./sw-register.js?v=1.22.1",
   "./manifest.webmanifest"
 ];
 self.addEventListener("install", event => {
