@@ -1,4 +1,4 @@
-const CACHE = "kd-intelligence-v1.22.1";
+const CACHE = "kd-intelligence-v1.22.2";
 const CORE = [
   "./",
   "./index.html",
@@ -10,8 +10,8 @@ const CORE = [
   "./app.js?v=1.22.0",
   "./runtime-fixes.js?v=1.22.0",
   "./scanner-pro.js?v=1.22.0",
-  "./auth.js?v=1.0.1",
-  "./sw-register.js?v=1.22.1",
+  "./auth.js?v=1.0.2",
+  "./sw-register.js?v=1.22.2",
   "./manifest.webmanifest"
 ];
 self.addEventListener("install", event => {
