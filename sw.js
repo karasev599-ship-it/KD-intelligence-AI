@@ -1,17 +1,17 @@
-const CACHE = "kd-intelligence-v1.13.0";
+const CACHE = "kd-intelligence-v1.22.2";
 const CORE = [
   "./",
   "./index.html",
-  "./style.css?v=1.12.5",
-  "./chart.js?v=1.12.0",
-  "./brand-fallback.js?v=1.12.5",
-  "./interaction-recovery.js?v=1.12.6",
+  "./style.css?v=1.22.0",
+  "./chart.js?v=1.22.0",
+  "./brand-fallback.js?v=1.22.1",
+  "./interaction-recovery.js?v=1.22.1",
   "./owner-auth-fixes.js?v=1.0.0",
-  "./app.js?v=1.12.0",
-  "./runtime-fixes.js?v=1.12.3",
-  "./scanner-pro.js?v=1.12.0",
-  "./auth.js?v=2.2.0",
-  "./sw-register.js?v=1.12.3",
+  "./app.js?v=1.22.0",
+  "./runtime-fixes.js?v=1.22.0",
+  "./scanner-pro.js?v=1.22.0",
+  "./auth.js?v=1.0.2",
+  "./sw-register.js?v=1.22.2",
   "./manifest.webmanifest"
 ];
 self.addEventListener("install", event => {

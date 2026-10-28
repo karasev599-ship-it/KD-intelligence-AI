@@ -15,7 +15,7 @@
     document.head.appendChild(script);
   }
   function applyKDFavicon() {
-    const href = 'assets/favicon.svg?v=1.12.5';
+    const href = 'assets/favicon.svg?v=1.22.1';
     let icon = document.querySelector('link[data-kd-favicon]');
     if (!icon) { icon = document.createElement('link'); icon.rel = 'icon'; icon.type = 'image/svg+xml'; icon.dataset.kdFavicon = 'true'; document.head.appendChild(icon); }
     icon.href = href;
@@ -33,7 +33,7 @@
         const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = 'trade-import.css?v=1.12.0'; link.dataset.kdTradeImportCss = 'true'; document.head.appendChild(link);
       }
     });
-    loadScript('interaction-recovery.js?v=1.12.5', 'kdInteractionRecoveryLoaded');
+    loadScript('interaction-recovery.js?v=1.22.1', 'kdInteractionRecoveryLoaded');
     loadScript('kd-intelligence-ui.js?v=1.0.0', 'kdIntelligenceUiLoaded');
     loadScript('user-scope-fix.js?v=1.0.0', 'kdUserScopeFixLoaded');
   }
