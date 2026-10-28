@@ -1,8 +1,10 @@
-/* KriptoDanik AI — interaction recovery v1.12.6 */
+/* KriptoDanik AI — interaction recovery v1.22.1 */
 (function () {
   'use strict';
-  const APP_SRC = 'app.js?v=1.12.0';
-  const RUNTIME_SRC = 'runtime-fixes.js?v=1.12.3';
+  // Keep recovery fallbacks aligned with the current primary entry points in index.html.
+  // Older query versions could re-introduce stale app/runtime code after a delayed load.
+  const APP_SRC = 'app.js?v=1.22.0';
+  const RUNTIME_SRC = 'runtime-fixes.js?v=1.22.0';
   const OWNER_SRC = 'owner-auth-fixes.js?v=1.0.0';
   let appLoadRequested = false, runtimeLoadRequested = false, ownerLoadRequested = false;
   function getApp() { try { if (typeof App !== 'undefined') return App; } catch (_) {} return window.App || null; }
