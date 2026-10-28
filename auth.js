@@ -49,8 +49,30 @@
     window.KD_AUTH_USER = user;
     const app = window.App;
     if (app && typeof app.setStorageScope === 'function') {
-      try { app.setStorageScope(user.email || user.id, { migrate: false }); }
-      catch (error) { console.warn('KD auth: could not switch profile storage scope.', error); }
+      try {
+        const identity = user.email || user.id;
+        const normalized = typeof app.normalizeStorageScope === 'function'
+          ? app.normalizeStorageScope(identity)
+          : String(identity).trim().toLowerCase().replace(/[^a-z0-9._@-]/g, '_').slice(0, 96);
+        const targetKey = normalized === 'anonymous' ? 'kriptodanik_state' : 'kriptodanik_state:' + normalized;
+        // setStorageScope(load=true) does not clear in-memory fields when the
+        // target account has no saved state. Clear the anonymous in-memory state
+        // first so a new account cannot see another visitor's trades/profile.
+        if (!localStorage.getItem(targetKey)) {
+          app.onboardingDone = false;
+          app.userData = {};
+          app.trades = [];
+          app.filteredTrades = [];
+          app.events = [];
+          app.guardianRules = [];
+          app.guardianViolations = [];
+          app.aiHistory = [];
+          app.strategies = [];
+        }
+        app.setStorageScope(identity, { migrate: false });
+      } catch (error) {
+        console.warn('KD auth: could not switch profile storage scope.', error);
+      }
     }
     const onboardingName = $('onboardingName');
     if (onboardingName && !onboardingName.value && user.name) onboardingName.value = user.name;
