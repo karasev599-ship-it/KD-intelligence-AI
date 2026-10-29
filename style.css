@@ -53,7 +53,7 @@
 .brand-hero-art.kd-mascot-art {
   right: 1%;
   bottom: 0;
-  width: 53%;
+  width: 49%;
   height: 100%;
   overflow: hidden;
   z-index: 2;
@@ -63,15 +63,15 @@
   right: 0;
   bottom: -1%;
   width: auto;
-  height: 158%;
+  height: 120%;
   max-width: none;
   object-fit: contain;
   object-position: center bottom;
   filter: drop-shadow(0 0 28px rgba(138,43,226,.3));
 }
 @media (max-width: 1100px) {
-  .brand-hero-art.kd-mascot-art { width: 52%; opacity: .82; }
-  .brand-hero-art.kd-mascot-art .kd-dashboard-mascot { height: 142%; }
+  .brand-hero-art.kd-mascot-art { width: 49%; opacity: .82; }
+  .brand-hero-art.kd-mascot-art .kd-dashboard-mascot { height: 112%; }
 }
 @media (max-width: 700px) {
   .brand-hero-art.kd-mascot-art {
@@ -80,5 +80,5 @@
     height: 58%;
     opacity: .42;
   }
-  .brand-hero-art.kd-mascot-art .kd-dashboard-mascot { height: 150%; }
+  .brand-hero-art.kd-mascot-art .kd-dashboard-mascot { height: 120%; }
 }
