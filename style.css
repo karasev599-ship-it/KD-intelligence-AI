@@ -82,3 +82,52 @@
   }
   .brand-hero-art.kd-mascot-art .kd-dashboard-mascot { height: 120%; }
 }
+
+/* KD Intelligence — lightweight holographic brain overlay; decorative only */
+.brand-hero-art.kd-mascot-art .kd-brain-orb {
+  position: absolute;
+  z-index: 4;
+  left: 15%;
+  bottom: 13%;
+  width: clamp(88px, 22%, 168px);
+  aspect-ratio: 1.12;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 48%, rgba(96,70,255,.25) 0%, rgba(45,185,255,.12) 36%, transparent 72%);
+  filter: drop-shadow(0 0 12px rgba(132,76,255,.65));
+}
+.brand-hero-art.kd-mascot-art .kd-brain-orb svg {
+  position: relative;
+  z-index: 2;
+  width: 82%;
+  height: 82%;
+  overflow: visible;
+  filter: drop-shadow(0 0 5px rgba(117,111,255,.85));
+}
+.brand-hero-art.kd-mascot-art .kd-brain-orbit {
+  position: absolute;
+  left: 4%;
+  top: 34%;
+  width: 92%;
+  height: 34%;
+  border: 1.5px solid rgba(135,95,255,.9);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(112,75,255,.7), inset 0 0 8px rgba(58,195,255,.25);
+}
+.brand-hero-art.kd-mascot-art .kd-brain-orbit-a { transform: rotate(-17deg); }
+.brand-hero-art.kd-mascot-art .kd-brain-orbit-b {
+  transform: rotate(48deg);
+  width: 74%;
+  height: 28%;
+  left: 13%;
+  top: 37%;
+  border-color: rgba(57,208,255,.75);
+}
+@media (max-width: 1100px) {
+  .brand-hero-art.kd-mascot-art .kd-brain-orb { left: 13%; bottom: 12%; width: clamp(76px, 24%, 142px); }
+}
+@media (max-width: 700px) {
+  .brand-hero-art.kd-mascot-art .kd-brain-orb { left: 12%; bottom: 9%; width: clamp(70px, 24%, 116px); opacity: .85; }
+}
