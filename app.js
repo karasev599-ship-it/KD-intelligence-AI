@@ -465,6 +465,16 @@ const App = {
                 this.onboardingDone = state.onboardingDone || false;
                 this.userData = state.userData || {};
                 this.trades = state.trades || [];
+
+                // Repair the known dashboard balance corruption: the account previously
+                // displayed $800.00, then jumped to exactly $8,000,000.00 with no trades.
+                // Only migrate that exact suspicious value when there is no trade history;
+                // leave all other capital values and every trade untouched.
+                if (Number(this.userData.capital) === 8000000 && this.trades.length === 0) {
+                    this.userData.capital = 800;
+                    this.saveState();
+                }
+
                 this.events = this.reviveEvents(state.events);
                 this.guardianRules = state.guardianRules || [];
                 this.guardianViolations = state.guardianViolations || [];
